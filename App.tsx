@@ -1,17 +1,17 @@
-import { Feather } from "@expo/vector-icons";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { SplashScreen } from "expo";
-import * as Font from "expo-font";
-import * as React from "react";
-import { Platform, StatusBar } from "react-native";
+import { Feather } from '@expo/vector-icons';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { SplashScreen } from 'expo';
+import * as Font from 'expo-font';
+import * as React from 'react';
+import { Platform, StatusBar } from 'react-native';
 
-import Home from "./screens/Home";
-import Camera from "./screens/Camera";
+import Home from './screens/Home';
+import Vision from './screens/Vision';
 
 export type RootStackParamList = {
   Home: undefined;
-  Camera: undefined;
+  Vision: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -27,8 +27,8 @@ export default function App() {
         // Load fonts
         await Font.loadAsync({
           ...Feather.font,
-          Bungee: require("./assets/fonts/Bungee.ttf"),
-          Quicksand: require("./assets/fonts/Quicksand.ttf"),
+          Bungee: require('./assets/fonts/Bungee.ttf'),
+          Quicksand: require('./assets/fonts/Quicksand.ttf'),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
@@ -45,16 +45,16 @@ export default function App() {
     return null;
   } else {
     return (
-        <>
-          {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+      <>
+        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
 
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home">
-              <Stack.Screen name="Home" component={Home} />
-              <Stack.Screen name="Camera" component={Camera} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Vision" component={Vision} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </>
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Platform, Dimensions, StatusBar } from 'react-native';
+import { Platform, Dimensions } from 'react-native';
 
 export const color = {
   background: '#fdfdfd',

@@ -8,6 +8,7 @@ import BlockButton from '../components/BlockButton';
 import CreateGameGrid from '../components/CreateGameGrid';
 import HomeTitle from '../components/HomeTitle';
 import { fonts } from '../util/theme';
+import { GameConfig } from '../util/types';
 
 type HomeProps = {
   route: RouteProp<StackParams, 'Home'>;
@@ -18,18 +19,18 @@ export default function Home({ navigation }: HomeProps) {
   const goCamera = () => {
     navigation.navigate('Vision');
   };
-  const goJoin = () => {
-    navigation.navigate('JoinGame');
+  const goCreate = (options: GameConfig) => {
+    navigation.navigate('CreateGame', { options });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <HomeTitle />
-      <BlockButton style={styles.joinBtn} text="Join Game" onPress={goJoin} />
+      <BlockButton style={styles.joinBtn} text="Join Game" onPress={goCamera} />
       <Text style={styles.startText}>
         If you don't have a code start a game below
       </Text>
-      <CreateGameGrid onPress={goCamera} />
+      <CreateGameGrid onPress={goCreate} />
     </SafeAreaView>
   );
 }

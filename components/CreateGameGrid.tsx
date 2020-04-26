@@ -2,45 +2,37 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { color, fonts, theme } from '../util/theme';
+import { GameConfig } from '../util/types';
 
 type Props = {
-  onPress(gameMode: string): void;
+  onPress(gameMode: GameConfig): void;
 };
 
 type BtnProps = {
-  onPress(gameMode: string): void;
-  options: MaskedBtnOptions;
+  onPress(config: GameConfig): void;
+  options: GameConfig;
 };
 
-type MaskedBtnOptions = {
-  gameId: string;
-  primaryColor: string;
-  secondaryColor: string;
-};
-
-const MaskedBtn = ({
-  onPress,
-  options: { gameId, primaryColor, secondaryColor },
-}: BtnProps) => {
+const MaskedBtn = ({ onPress, options }: BtnProps) => {
   return (
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
-      style={{ ...styles.maskedBtn, backgroundColor: primaryColor }}
-      onPress={() => onPress(gameId)}
+      style={{ ...styles.maskedBtn, backgroundColor: options.primaryColor }}
+      onPress={() => onPress(options)}
     >
       <View
         style={{
           ...styles.colorCircle,
-          backgroundColor: secondaryColor,
+          backgroundColor: options.secondaryColor,
         }}
       />
-      <Text style={styles.text}>{gameId} items</Text>
+      <Text style={styles.text}>{options.gameId} items</Text>
     </TouchableOpacity>
   );
 };
 
 export default function CreateGameGrid({ onPress }: Props) {
-  const maskedBtns: MaskedBtnOptions[] = [
+  const gameBtns: GameConfig[] = [
     {
       gameId: '3',
       primaryColor: color.home.green,
@@ -65,7 +57,7 @@ export default function CreateGameGrid({ onPress }: Props) {
 
   return (
     <View style={styles.container}>
-      {maskedBtns.map((btnOpts) => (
+      {gameBtns.map((btnOpts) => (
         <MaskedBtn key={btnOpts.gameId} onPress={onPress} options={btnOpts} />
       ))}
     </View>
@@ -101,9 +93,5 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     top: -40,
     right: -40,
-  },
-  locked: {
-    position: 'absolute',
-    top: 20,
   },
 });

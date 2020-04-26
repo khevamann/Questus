@@ -12,6 +12,7 @@ import Home from './screens/Home';
 import JoinGame from './screens/JoinGame';
 import PlayGame from './screens/PlayGame';
 import Vision from './screens/Vision';
+import { GameConfig } from './util/types';
 
 export type RootStackParams = {
   Main: undefined;
@@ -20,7 +21,9 @@ export type RootStackParams = {
 
 export type StackParams = {
   Home: undefined;
-  CreateGame: undefined;
+  CreateGame: {
+    options: GameConfig;
+  };
   JoinGame: undefined;
   PlayGame: undefined;
   Vision: undefined;

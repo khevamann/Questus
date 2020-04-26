@@ -16,7 +16,7 @@ export default function BackButton({ text, onPress }: Props) {
       style={styles.container}
       onPress={onPress}
     >
-      <Feather name="arrow-left" size={30} color={color.danger} />
+      <Feather name="arrow-left" size={30} color={color.white} />
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   );
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    borderColor: color.danger,
+    borderColor: color.white,
     borderWidth: 2,
     width: 130,
     height: 45,
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: fonts.bungee,
-    color: color.danger,
+    color: color.white,
     fontSize: 20,
     padding: 0,
     lineHeight: 0,

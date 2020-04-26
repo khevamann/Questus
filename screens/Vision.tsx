@@ -2,16 +2,25 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Camera, CameraProps } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { RootStackParamList } from '../App';
+import { StackParams } from '../App';
 import { callGoogleVisionAsync } from '../util/visionApi';
-import { color, layout } from '../util/theme';
+import { color, layout, theme } from '../util/theme';
 import { Feather } from '@expo/vector-icons';
 
 type VisionProps = {
-  route: RouteProp<RootStackParamList, 'Vision'>;
-  navigation: StackNavigationProp<RootStackParamList, 'Vision'>;
+  route: RouteProp<StackParams, 'Vision'>;
+  navigation: StackNavigationProp<StackParams, 'Vision'>;
   camera: Camera | null;
 };
 
@@ -54,46 +63,54 @@ export default function Vision({ navigation, camera }: VisionProps) {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.camContainer}>
-        <Camera
-          style={styles.camera}
-          ratio="4:3"
-          ref={(ref) => (camera = ref)}
-        ></Camera>
-      </View>
+    <>
+      <StatusBar barStyle="light-content" translucent />
       <View style={styles.container}>
-        <TouchableOpacity
-          activeOpacity={0.5}
-          style={styles.takePicBtn}
-          onPress={takePictureAsync}
-        >
-          <Feather name="camera" size={32} color="white" />
-        </TouchableOpacity>
-        {/*        {image !== '' && <Image style={styles.image} source={{ uri: image }} />}*/}
-        {status !== '' && <Text style={styles.text}>{status}</Text>}
+        <Camera style={styles.camera} ratio="4:3" ref={(ref) => (camera = ref)}>
+          <View style={styles.camLayover}>
+            <TouchableOpacity
+              activeOpacity={theme.activeOpacity}
+              style={styles.takePicBtn}
+              onPress={takePictureAsync}
+            >
+              <Feather name="camera" size={32} color="white" />
+            </TouchableOpacity>
+            {status !== '' && <Text style={styles.text}>{status}</Text>}
+            {image !== '' && (
+              <Image style={styles.image} source={{ uri: image }} />
+            )}
+          </View>
+        </Camera>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
   },
-  camContainer: {
-    flex: 2,
+  camLayover: {
+    borderWidth: 3,
+    borderColor: 'red',
+    borderRadius: 40,
+    width: layout.screenWidth,
+    height: layout.fullHeight,
+    /*Re-Center content after camera has been shifted*/
+    left: (layout.screenHeight * 0.7 - layout.screenWidth) / 2,
   },
   camera: {
-    width: layout.screenWidth,
-    height: layout.screenWidth * 1.33,
+    width: layout.screenHeight * 0.7,
+    height: layout.fullHeight,
+    /*Center camera*/
+    right: (layout.screenHeight * 0.7 - layout.screenWidth) / 2,
   },
   takePicBtn: {
     margin: 20,
+    alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: color.blue,
+    backgroundColor: color.purple,
     borderWidth: 3,
     borderColor: color.light,
     width: 75,
@@ -101,10 +118,13 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   image: {
+    borderWidth: 3,
+    margin: 10,
     width: 300,
-    height: 300,
+    height: 300 * 1.33,
   },
   text: {
     margin: 5,
+    color: color.white,
   },
 });

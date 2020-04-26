@@ -4,17 +4,41 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SplashScreen } from 'expo';
 import * as Font from 'expo-font';
 import * as React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import CreateGame from './screens/CreateGame';
 import Home from './screens/Home';
+import JoinGame from './screens/JoinGame';
+import PlayGame from './screens/PlayGame';
 import Vision from './screens/Vision';
 
-export type RootStackParamList = {
-  Home: undefined;
+export type RootStackParams = {
+  Main: undefined;
   Vision: undefined;
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
+export type StackParams = {
+  Home: undefined;
+  CreateGame: undefined;
+  JoinGame: undefined;
+  PlayGame: undefined;
+  Vision: undefined;
+};
+
+const RootStack = createStackNavigator<RootStackParams>();
+const Stack = createStackNavigator<StackParams>();
+
+function StackScreen() {
+  return (
+    <Stack.Navigator initialRouteName="Home" headerMode="none">
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="JoinGame" component={JoinGame} />
+      <Stack.Screen name="CreateGame" component={CreateGame} />
+      <Stack.Screen name="PlayGame" component={PlayGame} />
+    </Stack.Navigator>
+  );
+}
 
 export default function App() {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -28,7 +52,9 @@ export default function App() {
         await Font.loadAsync({
           ...Feather.font,
           Bungee: require('./assets/fonts/Bungee.ttf'),
-          Quicksand: require('./assets/fonts/Quicksand.ttf'),
+          QuicksandReg: require('./assets/fonts/Quicksand-Regular.ttf'),
+          QuicksandMed: require('./assets/fonts/Quicksand-Medium.ttf'),
+          QuicksandBold: require('./assets/fonts/Quicksand-Bold.ttf'),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
@@ -45,16 +71,19 @@ export default function App() {
     return null;
   } else {
     return (
-      <>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-
+      <SafeAreaProvider>
+        <StatusBar
+          barStyle="dark-content"
+          translucent
+          backgroundColor="#0000"
+        />
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Home">
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Vision" component={Vision} />
-          </Stack.Navigator>
+          <RootStack.Navigator mode="modal" headerMode="none">
+            <RootStack.Screen name="Main" component={StackScreen} />
+            <RootStack.Screen name="Vision" component={Vision} />
+          </RootStack.Navigator>
         </NavigationContainer>
-      </>
+      </SafeAreaProvider>
     );
   }
 }

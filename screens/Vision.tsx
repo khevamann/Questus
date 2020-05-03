@@ -3,6 +3,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Camera, CameraProps } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   Platform,
   SafeAreaView,
@@ -15,8 +17,10 @@ import {
 
 import { StackParams } from '../App';
 import { callGoogleVisionAsync } from '../util/visionApi';
-import { color, layout, theme } from '../util/theme';
+import { color, fonts, layout, safeAreaInsets, theme } from '../util/theme';
 import { Feather } from '@expo/vector-icons';
+import FocusGrid from '../components/FocusGrid';
+import CircleButton from '../components/CircleButton';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -25,60 +29,107 @@ type VisionProps = {
 };
 
 export default function Vision({ navigation, camera }: VisionProps) {
-  const [image, setImage] = React.useState('');
-  const [status, setStatus] = useState<string>('');
+  const [image, setImage] = useState('');
+  const [status, setStatus] = useState('');
+  const [flash, setFlash] = useState<boolean>(false);
+  const [hasPermission, setHasPermission] = useState(false);
+
   const takePictureAsync = async () => {
+    setStatus('searching');
     if (!camera) return;
     const { uri, base64 } = await camera.takePictureAsync({
       base64: true,
     });
     if (base64) {
-      setStatus('Loading...');
       setImage(uri);
       try {
         const result = await callGoogleVisionAsync(base64);
-        setStatus(result);
         console.log(result);
+        setStatus('found');
+        Alert.alert('Results', result);
       } catch (error) {
         console.log(error);
-        setStatus(`Error: ${error.message}`);
       }
     }
   };
-
-  const [hasPermission, setHasPermission] = useState(false);
+  const toggleFlash = () => {
+    setFlash(!flash);
+  };
+  const exit = () => {
+    navigation.goBack();
+  };
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === 'granted');
+      if (status != 'granted') {
+        Alert.alert(
+          'No Permission',
+          'You must enable camera access in settings in order to find items.',
+          [{ text: 'OK', onPress: () => exit() }]
+        );
+      }
     })();
   }, []);
 
-  if (hasPermission === null) {
+  if (hasPermission === null || !hasPermission) {
     return <View />;
-  }
-  if (!hasPermission) {
-    return <Text>No access to camera</Text>;
   }
 
   return (
     <>
       <StatusBar barStyle="light-content" translucent />
       <View style={styles.container}>
-        <Camera style={styles.camera} ratio="4:3" ref={(ref) => (camera = ref)}>
-          <View style={styles.camLayover}>
-            <TouchableOpacity
-              activeOpacity={theme.activeOpacity}
-              style={styles.takePicBtn}
-              onPress={takePictureAsync}
-            >
-              <Feather name="camera" size={32} color="white" />
-            </TouchableOpacity>
-            {status !== '' && <Text style={styles.text}>{status}</Text>}
-            {image !== '' && (
-              <Image style={styles.image} source={{ uri: image }} />
-            )}
+        <Camera
+          style={styles.camera}
+          ratio="4:3"
+          flashMode={flash ? 'torch' : 'off'}
+          ref={(ref) => (camera = ref)}
+        >
+          <View
+            style={{
+              ...styles.camLayover,
+              paddingTop: safeAreaInsets.top,
+              paddingBottom: safeAreaInsets.bottom,
+            }}
+          >
+            <View style={styles.itemCont}>
+              <Text style={styles.itemText}>Apple</Text>
+            </View>
+            <FocusGrid style={styles.focusGrid}></FocusGrid>
+            <View style={styles.options}>
+              <CircleButton
+                small
+                onPress={toggleFlash}
+                style={{ backgroundColor: color.semi }}
+              >
+                {flash ? (
+                  <Feather name="zap" size={33} color={color.white} />
+                ) : (
+                  <Feather name="zap-off" size={33} color={color.white} />
+                )}
+              </CircleButton>
+              <CircleButton onPress={takePictureAsync}>
+                <>
+                  {status === 'searching' ? (
+                    <ActivityIndicator size="large" color={color.white} />
+                  ) : (
+                    <Feather name="camera" size={32} color={color.white} />
+                  )}
+                </>
+              </CircleButton>
+              <CircleButton
+                small
+                onPress={exit}
+                style={{ backgroundColor: color.semi }}
+              >
+                <Feather name="x" size={35} color={color.white} />
+              </CircleButton>
+            </View>
+            {/*{image !== '' && (*/}
+            {/*  <Image style={styles.image} source={{ uri: image }} />*/}
+            {/*)}*/}
           </View>
         </Camera>
       </View>
@@ -91,11 +142,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   camLayover: {
-    borderWidth: 3,
-    borderColor: 'red',
-    borderRadius: 40,
     width: layout.screenWidth,
     height: layout.fullHeight,
+    alignItems: 'center',
     /*Re-Center content after camera has been shifted*/
     left: (layout.screenHeight * 0.7 - layout.screenWidth) / 2,
   },
@@ -105,17 +154,31 @@ const styles = StyleSheet.create({
     /*Center camera*/
     right: (layout.screenHeight * 0.7 - layout.screenWidth) / 2,
   },
-  takePicBtn: {
-    margin: 20,
-    alignSelf: 'center',
+  itemCont: {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: color.purple,
-    borderWidth: 3,
-    borderColor: color.light,
-    width: 75,
-    height: 75,
-    borderRadius: 40,
+    borderRadius: 10,
+    width: layout.screenWidth * 0.8,
+    marginTop: 30,
+    height: 50,
+  },
+  focusGrid: {
+    flex: 1,
+    width: layout.screenWidth,
+  },
+  options: {
+    width: layout.screenWidth,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    marginBottom: 40,
+    margin: 20,
+  },
+  itemText: {
+    fontFamily: fonts.quicksand.bold,
+    fontSize: 20,
+    color: color.white,
   },
   image: {
     borderWidth: 3,

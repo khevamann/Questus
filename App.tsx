@@ -24,9 +24,15 @@ export type StackParams = {
   CreateGame: {
     options: GameConfig;
   };
-  JoinGame: undefined;
-  PlayGame: undefined;
-  Vision: undefined;
+  JoinGame: {
+    options: GameConfig;
+  };
+  PlayGame: {
+    options: GameConfig;
+  };
+  Vision: {
+    callback(complete: boolean, index: number): void;
+  };
 };
 
 const RootStack = createStackNavigator<RootStackParams>();

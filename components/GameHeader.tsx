@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bungee,
     color: color.white,
     fontSize: 40,
+    lineHeight: 40,
   },
   colorCircle: {
     width: 200,

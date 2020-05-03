@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     color: color.white,
     fontSize: 20,
     padding: 0,
-    lineHeight: 0,
+    lineHeight: 20,
     top: 2,
   },
 });

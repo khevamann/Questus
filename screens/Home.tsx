@@ -1,13 +1,15 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, Text } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 import { StackParams } from '../App';
 import BlockButton from '../components/BlockButton';
 import CreateGameGrid from '../components/CreateGameGrid';
 import HomeTitle from '../components/HomeTitle';
-import { fonts } from '../util/theme';
+import { MSG_TEXT } from '../util/styles';
+import { color, setInsets } from '../util/theme';
 import { GameConfig } from '../util/types';
 
 type HomeProps = {
@@ -16,22 +18,30 @@ type HomeProps = {
 };
 
 export default function Home({ navigation }: HomeProps) {
-  const goCamera = () => {
-    navigation.navigate('Vision');
+  const insets = useSafeArea();
+  setInsets(insets);
+
+  const goJoin = () => {
+    const options: GameConfig = {
+      gameId: '3',
+      primaryColor: color.home.green,
+      secondaryColor: color.home.red,
+    };
+    navigation.navigate('JoinGame', { options });
   };
   const goCreate = (options: GameConfig) => {
     navigation.navigate('CreateGame', { options });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{ ...styles.container, paddingTop: insets.top }}>
       <HomeTitle />
-      <BlockButton style={styles.joinBtn} text="Join Game" onPress={goCamera} />
+      <BlockButton style={styles.joinBtn} text="Join Game" onPress={goJoin} />
       <Text style={styles.startText}>
         If you don't have a code start a game below
       </Text>
       <CreateGameGrid onPress={goCreate} />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -41,14 +51,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   joinBtn: {
-    marginVertical: 30,
+    marginTop: 30,
   },
   startText: {
-    fontFamily: fonts.quicksand.medium,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    fontSize: 16,
-    marginHorizontal: 80,
-    marginBottom: 40,
+    ...MSG_TEXT,
   },
 });

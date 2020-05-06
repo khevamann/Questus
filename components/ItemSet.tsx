@@ -1,10 +1,8 @@
+import { Feather } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { color, fonts, layout, theme } from '../util/theme';
-import { useState } from 'react';
-import { Feather } from '@expo/vector-icons';
-import CircleButton from './CircleButton';
+import { color, fonts, theme } from '../util/theme';
 
 type Props = {
   style?: any;
@@ -54,7 +52,7 @@ export default function ItemSet({ style, onPress, selected, index }: Props) {
         selected === i ? (
           <Item key={value} onPress={newIndex} />
         ) : (
-          <ItemOff isDone={i < selected} complete={selected > 2} />
+          <ItemOff key={value} isDone={i < selected} complete={selected > 2} />
         )
       )}
     </View>

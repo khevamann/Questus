@@ -1,4 +1,3 @@
-import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useState } from 'react';
@@ -9,12 +8,10 @@ import GameHeader from '../components/GameHeader';
 import ItemSet from '../components/ItemSet';
 
 type PlayGameProps = {
-  route: RouteProp<StackParams, 'PlayGame'>;
   navigation: StackNavigationProp<StackParams, 'PlayGame'>;
 };
 
-export default function PlayGame({ route, navigation }: PlayGameProps) {
-  const { options } = route.params;
+export default function PlayGame({ navigation }: PlayGameProps) {
   const [selected, setSelected] = useState<number[]>([0, 3, 2]);
 
   const goBack = () => {
@@ -30,15 +27,10 @@ export default function PlayGame({ route, navigation }: PlayGameProps) {
 
   return (
     <View style={styles.container}>
-      <GameHeader
-        options={options}
-        gameCode="6TK8"
-        backText="Back"
-        onBack={goBack}
-      />
+      <GameHeader backText="Exit" onBack={goBack} />
       {[...Array(3)].map((value, index) => (
         <ItemSet
-          key={value}
+          key={index}
           style={styles.itemSet}
           selected={selected[index]}
           index={index}

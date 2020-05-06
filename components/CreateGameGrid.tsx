@@ -2,14 +2,14 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { color, fonts, theme } from '../util/theme';
-import { GameConfig } from '../util/types';
+import { GameConfig, GameModes } from '../util/types';
 
 type Props = {
-  onPress(gameMode: GameConfig): void;
+  onPress(gameType: number): void;
 };
 
 type BtnProps = {
-  onPress(config: GameConfig): void;
+  onPress(gameType: number): void;
   options: GameConfig;
 };
 
@@ -18,7 +18,7 @@ const MaskedBtn = ({ onPress, options }: BtnProps) => {
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
       style={{ ...styles.maskedBtn, backgroundColor: options.primaryColor }}
-      onPress={() => onPress(options)}
+      onPress={() => onPress(options.itemCount)}
     >
       <View
         style={{
@@ -26,39 +26,16 @@ const MaskedBtn = ({ onPress, options }: BtnProps) => {
           backgroundColor: options.secondaryColor,
         }}
       />
-      <Text style={styles.text}>{options.gameId} items</Text>
+      <Text style={styles.text}>{options.itemCount} items</Text>
     </TouchableOpacity>
   );
 };
 
 export default function CreateGameGrid({ onPress }: Props) {
-  const gameBtns: GameConfig[] = [
-    {
-      gameId: '3',
-      primaryColor: color.home.green,
-      secondaryColor: color.home.red,
-    },
-    {
-      gameId: '6',
-      primaryColor: color.home.purple,
-      secondaryColor: color.home.orange,
-    },
-    {
-      gameId: '9',
-      primaryColor: color.home.orange,
-      secondaryColor: color.home.purple,
-    },
-    {
-      gameId: '12',
-      primaryColor: color.home.red,
-      secondaryColor: color.home.green,
-    },
-  ];
-
   return (
     <View style={styles.container}>
-      {gameBtns.map((btnOpts) => (
-        <MaskedBtn key={btnOpts.gameId} onPress={onPress} options={btnOpts} />
+      {Object.keys(GameModes).map((key: string) => (
+        <MaskedBtn key={key} onPress={onPress} options={GameModes[key]} />
       ))}
     </View>
   );

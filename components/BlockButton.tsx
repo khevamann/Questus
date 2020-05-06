@@ -7,14 +7,16 @@ type Props = {
   style?: any;
   text: string;
   onPress(): void;
+  disabled?: boolean;
 };
 
-export default function BlockButton({ style, text, onPress }: Props) {
+export default function BlockButton({ style, text, onPress, disabled }: Props) {
   return (
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
-      style={[style, styles.container]}
+      style={[style, styles.container, disabled ? styles.disabled : null]}
       onPress={onPress}
+      disabled={disabled}
     >
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
@@ -36,5 +38,8 @@ const styles = StyleSheet.create({
     color: color.white,
     fontSize: 25,
     marginBottom: -5,
+  },
+  disabled: {
+    opacity: 0.7,
   },
 });

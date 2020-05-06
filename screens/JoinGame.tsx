@@ -1,46 +1,73 @@
-import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../App';
 import BlockButton from '../components/BlockButton';
-import GameHeader from '../components/GameHeader';
-import { fonts, safeAreaInsets } from '../util/theme';
-import { MSG_TEXT } from '../util/styles';
 import CodeInput from '../components/CodeInput';
+import GameHeader from '../components/GameHeader';
+import DataService from '../providers/dataservice';
+import { setGameCode, setGameType } from '../redux/actions/gameAction';
+import { RootState } from '../redux/reducers';
+import { gameTypeSelector } from '../redux/selectors';
+import { getGameFromChar } from '../util/helpers';
+import { MSG_TEXT } from '../util/styles';
+import { safeAreaInsets } from '../util/theme';
 
 type JoinGameProps = {
-  route: RouteProp<StackParams, 'JoinGame'>;
   navigation: StackNavigationProp<StackParams, 'JoinGame'>;
 };
 
-export default function JoinGame({ navigation, route }: JoinGameProps) {
-  const { options } = route.params;
+export default function JoinGame({ navigation }: JoinGameProps) {
+  const [code, updateCode] = useState<string>('');
+  const dispatch = useDispatch();
+  const gameType = useSelector<RootState, number>(gameTypeSelector);
 
   const goBack = () => {
     navigation.goBack();
   };
   const goGame = () => {
-    navigation.navigate('PlayGame', { options });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }, { name: 'CreateGame' }],
+    });
+  };
+
+  const setCode = (code: string) => {
+    updateCode(code);
+    if (code.length === 1) {
+      const itemNum = getGameFromChar(code);
+      if (itemNum >= 3 && itemNum <= 12 && gameType !== itemNum)
+        dispatch(setGameType(itemNum));
+    }
+    if (code.length === 4) {
+      if (DataService.validateCode(code)) {
+        goGame();
+        dispatch(setGameCode(code));
+      } else {
+        Alert.alert(
+          'Invalid Game Code',
+          "If you don't have a code go back and start a new game"
+        );
+        updateCode('');
+      }
+    }
   };
 
   return (
     <View style={styles.container}>
-      <GameHeader
-        options={options}
-        gameCode="6TK8"
-        backText="Back"
-        onBack={goBack}
-      />
+      <GameHeader backText="Back" onBack={goBack} />
       <Text style={styles.textMsg}>
         Ask your group leader for the code and enter it here.
       </Text>
-      <CodeInput />
+      <CodeInput code={code} updateCode={setCode} />
       <BlockButton
         style={{ marginBottom: safeAreaInsets.bottom }}
-        text="START GAME"
-        onPress={goGame}
+        text={code.length === 4 ? 'JOINING . . .' : 'JOIN GAME'}
+        onPress={() => {}}
+        disabled
       />
     </View>
   );

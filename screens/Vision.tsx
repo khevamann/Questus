@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 
 import { StackParams } from '../App';
-import { callGoogleVisionAsync } from '../util/visionApi';
+import { callGoogleVisionAsync } from '../providers/visionApi';
 import { color, fonts, layout, safeAreaInsets, theme } from '../util/theme';
 import { Feather } from '@expo/vector-icons';
 import FocusGrid from '../components/FocusGrid';

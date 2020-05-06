@@ -1,36 +1,32 @@
-import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
 
 import { StackParams } from '../App';
 import BlockButton from '../components/BlockButton';
 import CreateGameGrid from '../components/CreateGameGrid';
 import HomeTitle from '../components/HomeTitle';
+import { setGameType } from '../redux/actions/gameAction';
 import { MSG_TEXT } from '../util/styles';
-import { color, setInsets } from '../util/theme';
-import { GameConfig } from '../util/types';
+import { setInsets } from '../util/theme';
 
 type HomeProps = {
-  route: RouteProp<StackParams, 'Home'>;
   navigation: StackNavigationProp<StackParams, 'Home'>;
 };
 
 export default function Home({ navigation }: HomeProps) {
   const insets = useSafeArea();
+  const dispatch = useDispatch();
   setInsets(insets);
 
   const goJoin = () => {
-    const options: GameConfig = {
-      gameId: '3',
-      primaryColor: color.home.green,
-      secondaryColor: color.home.red,
-    };
-    navigation.navigate('JoinGame', { options });
+    navigation.navigate('JoinGame');
   };
-  const goCreate = (options: GameConfig) => {
-    navigation.navigate('CreateGame', { options });
+  const goCreate = (gameType: number) => {
+    dispatch(setGameType(gameType));
+    navigation.navigate('CreateGame');
   };
 
   return (

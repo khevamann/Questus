@@ -10,49 +10,36 @@ import {
 } from 'react-native';
 
 import { color, fonts } from '../util/theme';
-const CODE_LENGTH = new Array(4).fill(0);
 
-type StateTypes = {
-  value: string;
+type Props = {
+  updateCode(code: string): any;
+  code: string;
 };
 
-export default class App extends Component {
+export default class App extends Component<Props> {
   input: React.RefObject<any> = React.createRef();
-  state: StateTypes = {
-    value: '',
-  };
 
   handleClick = () => {
     this.input.current.focus();
   };
   handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
+    const { code } = this.props;
     if (e.nativeEvent.key === 'Backspace') {
-      this.setState((state: StateTypes) => {
-        return {
-          value: state.value.slice(0, state.value.length - 1),
-        };
-      });
+      this.props.updateCode(code.slice(0, code.length - 1));
     }
   };
-  handleChange = (value: string) => {
-    this.setState((state: StateTypes) => {
-      if (state.value.length >= CODE_LENGTH.length) return null;
-      return {
-        value: (state.value + value).slice(0, CODE_LENGTH.length),
-      };
-    });
+  handleChange = (newVal: string): any => {
+    const { code } = this.props;
+    newVal = newVal.replace(/[\W_]/, '').toUpperCase();
+    if (!newVal || code.length >= 4) return null;
+    this.props.updateCode(code + newVal);
   };
   render() {
-    const { value } = this.state;
+    const { code } = this.props;
 
-    const values = value.split('');
-
-    const selectedIndex =
-      values.length < CODE_LENGTH.length
-        ? values.length
-        : CODE_LENGTH.length - 1;
-
-    const hideInput = !(values.length < CODE_LENGTH.length);
+    const values = code.split('');
+    const selectedIndex = values.length < 4 ? values.length : 3;
+    const hideInput = !(values.length < 4);
 
     return (
       <View style={styles.container}>
@@ -64,6 +51,7 @@ export default class App extends Component {
               onChangeText={this.handleChange}
               onKeyPress={this.handleKeyPress}
               autoFocus
+              autoCapitalize="characters"
               selectionColor={color.transparent}
               style={[
                 styles.input,
@@ -73,7 +61,7 @@ export default class App extends Component {
                 },
               ]}
             />
-            {CODE_LENGTH.map((v, index) => {
+            {[...Array(4)].map((v, index) => {
               return (
                 <View style={[styles.display]} key={index}>
                   <Text style={styles.text}>{values[index] || ''}</Text>
@@ -101,7 +89,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 32,
     textAlign: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: color.transparent,
+    color: color.transparent,
     borderColor: color.blue,
     borderWidth: 5,
     borderRadius: 10,
@@ -122,12 +111,10 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   text: {
-    marginTop: 7,
+    marginTop: 8,
     fontFamily: fonts.bungee,
     color: color.blue,
     fontSize: 50,
-  },
-  noBorder: {
-    borderRightWidth: 0,
+    lineHeight: 50,
   },
 });

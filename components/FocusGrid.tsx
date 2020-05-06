@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Image, View } from 'react-native';
+
 import { layout } from '../util/theme';
 
 type Props = {

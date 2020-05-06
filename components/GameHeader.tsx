@@ -1,46 +1,42 @@
 import * as React from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
 
-import { color, fonts, layout } from '../util/theme';
-import { GameConfig } from '../util/types';
+import { RootState } from '../redux/reducers';
+import { codeSelector, gameTypeSelector } from '../redux/selectors';
+import { color, fonts, layout, safeAreaInsets } from '../util/theme';
+import { GameModes } from '../util/types';
 import BackButton from './BackButton';
 
 type Props = {
-  options: GameConfig;
-  gameCode: string;
   backText: string;
   onBack(): void;
 };
 
-export default function GameHeader({
-  backText,
-  onBack,
-  gameCode,
-  options: { primaryColor, secondaryColor },
-}: Props) {
-  const insets = useSafeArea();
-
+export default function GameHeader({ backText, onBack }: Props) {
+  const gameType = useSelector<RootState, number>(gameTypeSelector);
+  const gameCode = useSelector<RootState, string>(codeSelector);
+  const gameConfig = GameModes[`item${gameType}`];
   return (
     <>
       <StatusBar barStyle="light-content" />
       <View
         style={{
           ...styles.container,
-          backgroundColor: primaryColor,
-          paddingTop: insets.top,
+          backgroundColor: gameConfig.primaryColor,
+          paddingTop: safeAreaInsets.top,
         }}
       >
         <BackButton text={backText} onPress={onBack} />
         <View
           style={{
             ...styles.colorCircle,
-            backgroundColor: secondaryColor,
+            backgroundColor: gameConfig.secondaryColor,
           }}
         />
         <View style={styles.codeCont}>
           <Text style={styles.codeTitle}>GAME CODE</Text>
-          <Text style={styles.gameCode}>{gameCode}</Text>
+          <Text style={styles.gameCode}>{gameCode || 'QQQQ'}</Text>
         </View>
       </View>
     </>

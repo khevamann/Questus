@@ -6,7 +6,10 @@ import * as Font from 'expo-font';
 import * as React from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
+import Reactotron from 'reactotron-react-native';
 
+import store from './redux/store';
 import CreateGame from './screens/CreateGame';
 import Home from './screens/Home';
 import JoinGame from './screens/JoinGame';
@@ -21,12 +24,8 @@ export type RootStackParams = {
 
 export type StackParams = {
   Home: undefined;
-  CreateGame: {
-    options: GameConfig;
-  };
-  JoinGame: {
-    options: GameConfig;
-  };
+  CreateGame: undefined;
+  JoinGame: undefined;
   PlayGame: {
     options: GameConfig;
   };
@@ -34,6 +33,8 @@ export type StackParams = {
     callback(complete: boolean, index: number): void;
   };
 };
+
+if (__DEV__) Reactotron.configure().useReactNative().connect();
 
 const RootStack = createStackNavigator<RootStackParams>();
 const Stack = createStackNavigator<StackParams>();
@@ -49,7 +50,7 @@ function StackScreen() {
   );
 }
 
-export default function App() {
+function App() {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
 
   React.useEffect(() => {
@@ -80,19 +81,23 @@ export default function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle="dark-content"
-          translucent
-          backgroundColor="#0000"
-        />
-        <NavigationContainer>
-          <RootStack.Navigator mode="modal" headerMode="none">
-            <RootStack.Screen name="Main" component={StackScreen} />
-            <RootStack.Screen name="Vision" component={Vision} />
-          </RootStack.Navigator>
-        </NavigationContainer>
-      </SafeAreaProvider>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <StatusBar
+            barStyle="dark-content"
+            translucent
+            backgroundColor="#0000"
+          />
+          <NavigationContainer>
+            <RootStack.Navigator mode="modal" headerMode="none">
+              <RootStack.Screen name="Main" component={StackScreen} />
+              <RootStack.Screen name="Vision" component={Vision} />
+            </RootStack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </Provider>
     );
   }
 }
+
+export default App;

@@ -1,26 +1,30 @@
-import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../App';
 import BlockButton from '../components/BlockButton';
 import GameHeader from '../components/GameHeader';
+import DataService from '../providers/dataservice';
+import { setGameCode } from '../redux/actions/gameAction';
+import { RootState } from '../redux/reducers';
+import {
+  codeSelector,
+  gameTypeSelector,
+  playersSelector,
+} from '../redux/selectors';
+import { generateGameCode } from '../util/helpers';
 import { AVATAR_LARGE, HEADER_TEXT } from '../util/styles';
-import { safeAreaInsets } from '../util/theme';
+import { color, fonts, safeAreaInsets } from '../util/theme';
+import { PlayerType } from '../util/types';
 
 type CreateGameProps = {
-  route: RouteProp<StackParams, 'CreateGame'>;
   navigation: StackNavigationProp<StackParams, 'CreateGame'>;
 };
 
-type Player = {
-  name: string;
-  avatar: string;
-};
-
-const Player = ({ name, avatar }: Player) => {
+const Player = ({ name, avatar }: PlayerType) => {
   return (
     <View style={styles.player}>
       <Image style={AVATAR_LARGE} source={{ uri: avatar }} />
@@ -29,56 +33,38 @@ const Player = ({ name, avatar }: Player) => {
   );
 };
 
-const TEST_PLAYERS: Player[] = [
-  {
-    name: 'Player 1',
-    avatar:
-      'https://marav43842.i.lithium.com/t5/image/serverpage/image-id/209iA8553A9BB4ADD28C/image-size/large/is-moderation-mode/true?v=1.0&px=999',
-  },
-  {
-    name: 'Player 2',
-    avatar:
-      'https://marav43842.i.lithium.com/t5/image/serverpage/image-id/209iA8553A9BB4ADD28C/image-size/large/is-moderation-mode/true?v=1.0&px=999',
-  },
-  {
-    name: 'Player 3',
-    avatar:
-      'https://marav43842.i.lithium.com/t5/image/serverpage/image-id/209iA8553A9BB4ADD28C/image-size/large/is-moderation-mode/true?v=1.0&px=999',
-  },
-  {
-    name: 'Player 4',
-    avatar:
-      'https://marav43842.i.lithium.com/t5/image/serverpage/image-id/209iA8553A9BB4ADD28C/image-size/large/is-moderation-mode/true?v=1.0&px=999',
-  },
-  {
-    name: 'Player 5',
-    avatar:
-      'https://marav43842.i.lithium.com/t5/image/serverpage/image-id/209iA8553A9BB4ADD28C/image-size/large/is-moderation-mode/true?v=1.0&px=999',
-  },
-];
+export default function CreateGame({ navigation }: CreateGameProps) {
+  const dispatch = useDispatch();
+  const players = useSelector<RootState, PlayerType[]>(playersSelector);
+  const gameType = useSelector<RootState, number>(gameTypeSelector);
+  const gameCode = useSelector<RootState, string>(codeSelector);
 
-export default function CreateGame({ route, navigation }: CreateGameProps) {
-  const { options } = route.params;
+  useEffect(() => {
+    if (gameCode) {
+      //Join Game
+    } else {
+      const newCode = generateGameCode(gameType);
+      DataService.createGame(newCode).then((newCode: string) => {
+        dispatch(setGameCode(newCode));
+      });
+    }
+  }, []);
 
   const goBack = () => {
+    dispatch(setGameCode(''));
     navigation.goBack();
   };
   const goGame = () => {
-    navigation.navigate('PlayGame', { options });
+    navigation.navigate('PlayGame');
   };
 
   return (
     <View style={styles.container}>
-      <GameHeader
-        options={options}
-        gameCode="6TK8"
-        backText="Back"
-        onBack={goBack}
-      />
+      <GameHeader backText="EXIT" onBack={goBack} />
       <Text style={HEADER_TEXT}>PLAYERS (2-8)</Text>
       <View style={styles.outerPlayers}>
         <View style={styles.players}>
-          {TEST_PLAYERS.map((player: Player) => (
+          {players.map((player: PlayerType) => (
             <Player
               key={player.name}
               name={player.name}
@@ -88,8 +74,9 @@ export default function CreateGame({ route, navigation }: CreateGameProps) {
         </View>
       </View>
       <BlockButton
-        style={{ marginBottom: safeAreaInsets.bottom }}
-        text="START GAME"
+        style={{ marginBottom: safeAreaInsets.bottom || 20 }}
+        text={players.length < 2 ? 'WAITING . . .' : 'START GAME'}
+        disabled={players.length < 2}
         onPress={goGame}
       />
     </View>
@@ -114,7 +101,10 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     flexBasis: '40%',
     alignItems: 'center',
-    margin: 5,
   },
-  playerName: {},
+  playerName: {
+    fontFamily: fonts.quicksand.bold,
+    fontSize: 12,
+    color: color.dark,
+  },
 });

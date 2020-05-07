@@ -4,13 +4,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 
-import { StackParams } from '../App';
-import BlockButton from '../components/BlockButton';
-import CreateGameGrid from '../components/CreateGameGrid';
-import HomeTitle from '../components/HomeTitle';
-import { setGameType } from '../redux/actions/gameAction';
-import { MSG_TEXT } from '../util/styles';
-import { setInsets } from '../util/theme';
+import { StackParams } from '../../App';
+import BlockButton from '../../components/BlockButton';
+import { setGameType } from '../../redux/actions/gameAction';
+import { MSG_TEXT } from '../../util/styles';
+import { setInsets } from '../../util/theme';
+import CreateGameGrid from './CreateGameGrid';
+import HomeTitle from './HomeTitle';
 
 type HomeProps = {
   navigation: StackNavigationProp<StackParams, 'Home'>;

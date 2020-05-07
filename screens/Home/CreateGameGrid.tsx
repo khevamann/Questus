@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { color, fonts, theme } from '../util/theme';
-import { GameConfig, GameModes } from '../util/types';
+import { color, fonts, theme } from '../../util/theme';
+import { GameConfig, GameModes } from '../../util/types';
 
 type Props = {
   onPress(gameType: number): void;

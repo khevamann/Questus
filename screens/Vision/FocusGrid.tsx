@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image, View } from 'react-native';
 
-import { layout } from '../util/theme';
+import { layout } from '../../util/theme';
 
 type Props = {
   style?: any;
@@ -16,7 +16,7 @@ export default function FocusGrid({ style }: Props) {
           left: layout.screenWidth * 0.1,
           top: '20%',
         }}
-        source={require('../assets/images/focus.png')}
+        source={require('../../assets/images/focus.png')}
       />
       <Image
         style={{
@@ -25,7 +25,7 @@ export default function FocusGrid({ style }: Props) {
           right: layout.screenWidth * 0.1,
           top: '20%',
         }}
-        source={require('../assets/images/focus.png')}
+        source={require('../../assets/images/focus.png')}
       />
       <Image
         style={{
@@ -34,7 +34,7 @@ export default function FocusGrid({ style }: Props) {
           right: layout.screenWidth * 0.1,
           bottom: '20%',
         }}
-        source={require('../assets/images/focus.png')}
+        source={require('../../assets/images/focus.png')}
       />
       <Image
         style={{
@@ -43,7 +43,7 @@ export default function FocusGrid({ style }: Props) {
           left: layout.screenWidth * 0.1,
           bottom: '20%',
         }}
-        source={require('../assets/images/focus.png')}
+        source={require('../../assets/images/focus.png')}
       />
     </View>
   );

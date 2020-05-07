@@ -1,36 +1,28 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { StackParams } from '../App';
-import BlockButton from '../components/BlockButton';
-import GameHeader from '../components/GameHeader';
-import DataService from '../providers/dataservice';
-import { setGameCode } from '../redux/actions/gameAction';
-import { RootState } from '../redux/reducers';
+import { StackParams } from '../../App';
+import BlockButton from '../../components/BlockButton';
+import GameHeader from '../../components/GameHeader';
+import DataService from '../../providers/dataservice';
+import { setGameCode } from '../../redux/actions/gameAction';
+import { RootState } from '../../redux/reducers';
 import {
   codeSelector,
   gameTypeSelector,
   playersSelector,
-} from '../redux/selectors';
-import { generateGameCode } from '../util/helpers';
-import { AVATAR_LARGE, HEADER_TEXT } from '../util/styles';
-import { color, fonts, safeAreaInsets } from '../util/theme';
-import { PlayerType } from '../util/types';
+} from '../../redux/selectors';
+import { generateGameCode } from '../../util/helpers';
+import { HEADER_TEXT } from '../../util/styles';
+import { safeAreaInsets } from '../../util/theme';
+import { PlayerType } from '../../util/types';
+import Player from './Player';
 
 type CreateGameProps = {
   navigation: StackNavigationProp<StackParams, 'CreateGame'>;
-};
-
-const Player = ({ name, avatar }: PlayerType) => {
-  return (
-    <View style={styles.player}>
-      <Image style={AVATAR_LARGE} source={{ uri: avatar }} />
-      <Text style={styles.playerName}>{name}</Text>
-    </View>
-  );
 };
 
 export default function CreateGame({ navigation }: CreateGameProps) {
@@ -95,16 +87,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     flexWrap: 'wrap',
     flexDirection: 'row',
-  },
-  player: {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: '40%',
-    alignItems: 'center',
-  },
-  playerName: {
-    fontFamily: fonts.quicksand.bold,
-    fontSize: 12,
-    color: color.dark,
   },
 });

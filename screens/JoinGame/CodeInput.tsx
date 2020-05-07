@@ -9,14 +9,14 @@ import {
   TextInputKeyPressEventData,
 } from 'react-native';
 
-import { color, fonts } from '../util/theme';
+import { color, fonts } from '../../util/theme';
 
 type Props = {
   updateCode(code: string): any;
   code: string;
 };
 
-export default class App extends Component<Props> {
+export default class CodeInput extends Component<Props> {
   input: React.RefObject<any> = React.createRef();
 
   handleClick = () => {

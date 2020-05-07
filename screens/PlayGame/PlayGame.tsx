@@ -3,9 +3,9 @@ import * as React from 'react';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { StackParams } from '../App';
-import GameHeader from '../components/GameHeader';
-import ItemSet from '../components/ItemSet';
+import { StackParams } from '../../App';
+import GameHeader from '../../components/GameHeader';
+import ItemSet from './ItemSet';
 
 type PlayGameProps = {
   navigation: StackNavigationProp<StackParams, 'PlayGame'>;

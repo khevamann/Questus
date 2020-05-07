@@ -4,17 +4,17 @@ import { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { StackParams } from '../App';
-import BlockButton from '../components/BlockButton';
-import CodeInput from '../components/CodeInput';
-import GameHeader from '../components/GameHeader';
-import DataService from '../providers/dataservice';
-import { setGameCode, setGameType } from '../redux/actions/gameAction';
-import { RootState } from '../redux/reducers';
-import { gameTypeSelector } from '../redux/selectors';
-import { getGameFromChar } from '../util/helpers';
-import { MSG_TEXT } from '../util/styles';
-import { safeAreaInsets } from '../util/theme';
+import { StackParams } from '../../App';
+import BlockButton from '../../components/BlockButton';
+import GameHeader from '../../components/GameHeader';
+import DataService from '../../providers/dataservice';
+import { setGameCode, setGameType } from '../../redux/actions/gameAction';
+import { RootState } from '../../redux/reducers';
+import { gameTypeSelector } from '../../redux/selectors';
+import { getGameFromChar } from '../../util/helpers';
+import { MSG_TEXT } from '../../util/styles';
+import { safeAreaInsets } from '../../util/theme';
+import CodeInput from './CodeInput';
 
 type JoinGameProps = {
   navigation: StackNavigationProp<StackParams, 'JoinGame'>;

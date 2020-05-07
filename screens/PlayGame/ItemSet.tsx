@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { color, fonts, theme } from '../util/theme';
+import { color, fonts, theme } from '../../util/theme';
 
 type Props = {
   style?: any;

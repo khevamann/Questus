@@ -10,11 +10,11 @@ import { Provider } from 'react-redux';
 import Reactotron from 'reactotron-react-native';
 
 import store from './redux/store';
-import CreateGame from './screens/CreateGame';
-import Home from './screens/Home';
-import JoinGame from './screens/JoinGame';
-import PlayGame from './screens/PlayGame';
-import Vision from './screens/Vision';
+import CreateGame from './screens/CreateGame/CreateGame';
+import Home from './screens/Home/Home';
+import JoinGame from './screens/JoinGame/JoinGame';
+import PlayGame from './screens/PlayGame/PlayGame';
+import Vision from './screens/Vision/Vision';
 import { GameConfig } from './util/types';
 
 export type RootStackParams = {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { color, fonts } from '../util/theme';
+import { color, fonts } from '../../util/theme';
 
 export default function HomeTitle() {
   return (

@@ -43,7 +43,7 @@ const createGame = async (code: string): Promise<string> => {
   return new Promise((resolve) => {
     return setTimeout(() => {
       return resolve(code);
-    }, 2000);
+    }, 1000);
   });
 };
 const validateCode = (code: string) => {

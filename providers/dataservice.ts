@@ -1,4 +1,4 @@
-import { PlayerType } from '../util/types';
+import { GameItem, ItemStatus, PlayerType } from '../util/types';
 
 export const TEST_PLAYERS: PlayerType[] = [
   {
@@ -33,27 +33,42 @@ export const TEST_PLAYERS: PlayerType[] = [
   },
 ];
 
-const joinGame = async (code: string): Promise<any> => {
+const joinGame = async (code: string): Promise<PlayerType[]> => {
   return new Promise((resolve, reject) => {
-    if (code[0] === 'A') return reject(new Error('Game DNE'));
-    return resolve(TEST_PLAYERS);
+    if (code[0] === '0') return reject(new Error('Game DNE'));
+    return setTimeout(() => {
+      return resolve(TEST_PLAYERS);
+    }, 10);
   });
 };
 const createGame = async (code: string): Promise<string> => {
   return new Promise((resolve) => {
     return setTimeout(() => {
       return resolve(code);
-    }, 1000);
+    }, 10);
   });
 };
 const validateCode = (code: string) => {
   return code.match(/[A-Z]\d[A-Z]\d/g);
 };
 
+const getRandItems = async (count: number): Promise<GameItem[][]> => {
+  return new Promise((resolve) => {
+    return resolve(
+      Array.from(Array(count / 3)).map((val, index) => [
+        { name: `Item ${index * 3 + 1}`, status: ItemStatus.INPROGRESS },
+        { name: `Item ${index * 3 + 2}`, status: ItemStatus.INCOMPLETE },
+        { name: `Item ${index * 3 + 3}`, status: ItemStatus.INCOMPLETE },
+      ])
+    );
+  });
+};
+
 const DataService = {
   joinGame,
   createGame,
   validateCode,
+  getRandItems,
 };
 
 export default DataService;

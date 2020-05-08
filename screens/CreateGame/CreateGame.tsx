@@ -8,7 +8,7 @@ import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
 import DataService from '../../providers/dataservice';
-import { setGameCode } from '../../redux/actions/gameAction';
+import { setGameCode, setGamePlayers } from '../../redux/actions/gameAction';
 import { RootState } from '../../redux/reducers';
 import {
   codeSelector,
@@ -33,7 +33,9 @@ export default function CreateGame({ navigation }: CreateGameProps) {
 
   useEffect(() => {
     if (gameCode) {
-      //Join Game
+      DataService.joinGame(gameCode).then((players: PlayerType[]) => {
+        dispatch(setGamePlayers(players));
+      });
     } else {
       const newCode = generateGameCode(gameType);
       DataService.createGame(newCode).then((newCode: string) => {

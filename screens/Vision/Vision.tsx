@@ -21,6 +21,8 @@ import { color, fonts, layout, safeAreaInsets, theme } from '../../util/theme';
 import { Feather } from '@expo/vector-icons';
 import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
+import { useDispatch } from 'react-redux';
+import { setItemComplete } from '../../redux/actions/gameAction';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -28,11 +30,13 @@ type VisionProps = {
   camera: Camera | null;
 };
 
-export default function Vision({ navigation, camera }: VisionProps) {
+export default function Vision({ navigation, camera, route }: VisionProps) {
+  const dispatch = useDispatch();
   const [image, setImage] = useState('');
   const [status, setStatus] = useState('');
   const [flash, setFlash] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState(false);
+  const { itemIndex, itemName } = route.params;
 
   const takePictureAsync = async () => {
     setStatus('searching');
@@ -47,6 +51,8 @@ export default function Vision({ navigation, camera }: VisionProps) {
         console.log(result);
         setStatus('found');
         Alert.alert('Results', result);
+        dispatch(setItemComplete(itemIndex));
+        exit();
       } catch (error) {
         console.log(error);
       }
@@ -95,7 +101,7 @@ export default function Vision({ navigation, camera }: VisionProps) {
             }}
           >
             <View style={styles.itemCont}>
-              <Text style={styles.itemText}>Apple</Text>
+              <Text style={styles.itemText}>{itemName}</Text>
             </View>
             <FocusGrid style={styles.focusGrid}></FocusGrid>
             <View style={styles.options}>

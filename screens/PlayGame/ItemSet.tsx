@@ -2,38 +2,46 @@ import { Feather } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { color, fonts, theme } from '../../util/theme';
+import { color, fonts, layout, theme } from '../../util/theme';
+import { GameItem, ItemStatus } from '../../util/types';
 
 type Props = {
   style?: any;
-  selected: number;
-  index: number;
-  onPress(index: number): void;
+  items: GameItem[];
+  onPress(index: number, setIndex: number): void;
+  setIndex: number;
+  setColor: string;
 };
 type ItemProps = {
   onPress(): void;
+  name: string;
+  setColor: string;
 };
 type OffProps = {
-  isDone: boolean;
-  complete: boolean;
+  complete: ItemStatus;
+  setColor: string;
 };
 
-function Item({ onPress }: ItemProps) {
+function Item({ onPress, name, setColor }: ItemProps) {
   return (
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
       onPress={onPress}
-      style={[styles.item, styles.large]}
+      style={[
+        styles.item,
+        styles.large,
+        { backgroundColor: color.items[setColor] },
+      ]}
     >
-      <Text style={styles.itemText}>Item</Text>
+      <Text style={styles.itemText}>{name}</Text>
     </TouchableOpacity>
   );
 }
 
-function ItemOff({ isDone, complete }: OffProps) {
+function ItemOff({ complete, setColor }: OffProps) {
   return (
-    <View style={[styles.item, complete ? styles.large : null]}>
-      {isDone ? (
+    <View style={[styles.item, { backgroundColor: color.items[setColor] }]}>
+      {complete === ItemStatus.COMPLETE ? (
         <Feather name="check" size={35} color={color.success} />
       ) : (
         <Feather name="lock" size={35} color={color.white} />
@@ -42,17 +50,29 @@ function ItemOff({ isDone, complete }: OffProps) {
   );
 }
 
-export default function ItemSet({ style, onPress, selected, index }: Props) {
-  const newIndex = () => {
-    onPress(index);
-  };
+export default function ItemSet({
+  style,
+  setColor,
+  onPress,
+  items,
+  setIndex,
+}: Props) {
   return (
     <View style={[styles.container, style]}>
-      {[...Array(3)].map((value, i) =>
-        selected === i ? (
-          <Item key={value} onPress={newIndex} />
+      {items.map((value, index) =>
+        value.status === ItemStatus.INPROGRESS ? (
+          <Item
+            key={`key${index + setIndex}`}
+            setColor={setColor}
+            name={value.name}
+            onPress={() => onPress(index, setIndex)}
+          />
         ) : (
-          <ItemOff key={value} isDone={i < selected} complete={selected > 2} />
+          <ItemOff
+            key={`key${index + setIndex}`}
+            setColor={setColor}
+            complete={value.status}
+          />
         )
       )}
     </View>
@@ -63,16 +83,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     height: 70,
+    margin: 10,
   },
   large: {
-    flex: 1,
+    flexBasis: layout.screenWidth - 90 * 2,
   },
   item: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: color.items.blue,
     margin: 2.5,
     borderRadius: 10,
+    flexGrow: 1,
     flexBasis: 70,
   },
   itemText: {

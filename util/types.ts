@@ -1,5 +1,11 @@
 import { color } from './theme';
 
+export enum ItemStatus {
+  INCOMPLETE = -1,
+  INPROGRESS = 0,
+  COMPLETE = 1,
+}
+
 export type GameConfig = {
   itemCount: number;
   primaryColor: string;
@@ -16,6 +22,12 @@ export type GameData = {
   gameType: number;
   players: PlayerType[];
   gameCode: string;
+  items: GameItem[][];
+};
+
+export type GameItem = {
+  name: string;
+  status: ItemStatus;
 };
 
 type GameModeType = {

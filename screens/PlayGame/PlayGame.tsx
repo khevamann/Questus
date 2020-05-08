@@ -1,39 +1,55 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import GameHeader from '../../components/GameHeader';
+import DataService from '../../providers/dataservice';
+import { setGameItems } from '../../redux/actions/gameAction';
+import { RootState } from '../../redux/reducers';
+import { gameTypeSelector, itemsSelector } from '../../redux/selectors';
+import { GameItem } from '../../util/types';
 import ItemSet from './ItemSet';
 
 type PlayGameProps = {
   navigation: StackNavigationProp<StackParams, 'PlayGame'>;
 };
 
+const colors = ['green', 'orange', 'red', 'blue'];
+
 export default function PlayGame({ navigation }: PlayGameProps) {
-  const [selected, setSelected] = useState<number[]>([0, 3, 2]);
+  const dispatch = useDispatch();
+  const gameType = useSelector<RootState, number>(gameTypeSelector);
+  const items = useSelector<RootState, GameItem[][]>(itemsSelector);
+
+  useEffect(() => {
+    DataService.getRandItems(gameType).then((items: GameItem[][]) => {
+      dispatch(setGameItems(items));
+    });
+  }, []);
 
   const goBack = () => {
     navigation.goBack();
   };
 
-  const openCamera = (index: number) => {
-    navigation.navigate('Vision');
-    const newVal = [...selected];
-    newVal[index]++;
-    setSelected(newVal);
+  const openCamera = (index: number, setIndex: number) => {
+    navigation.navigate('Vision', {
+      itemIndex: index + setIndex * 3,
+      itemName: items[setIndex][index].name,
+    });
   };
 
   return (
     <View style={styles.container}>
       <GameHeader backText="Exit" onBack={goBack} />
-      {[...Array(3)].map((value, index) => (
+      {items.map((value, index) => (
         <ItemSet
           key={index}
-          style={styles.itemSet}
-          selected={selected[index]}
-          index={index}
+          setColor={colors[index]}
+          setIndex={index}
+          items={value}
           onPress={openCamera}
         />
       ))}
@@ -44,8 +60,5 @@ export default function PlayGame({ navigation }: PlayGameProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  itemSet: {
-    margin: 10,
   },
 });

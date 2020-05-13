@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { AVATAR_LARGE } from '../../util/styles';
+import PlayerAvatar from '../../components/PlayerAvatar';
 import { color, fonts } from '../../util/theme';
 import { PlayerType } from '../../util/types';
 
 const Player = ({ name, avatar }: PlayerType) => {
   return (
     <View style={styles.player}>
-      <Image style={AVATAR_LARGE} source={{ uri: avatar }} />
+      <PlayerAvatar src={avatar} />
       <Text style={styles.playerName}>{name}</Text>
     </View>
   );

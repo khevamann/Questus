@@ -5,11 +5,10 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { color, fonts, theme } from '../util/theme';
 
 type Props = {
-  text: string;
   onPress(): void;
 };
 
-export default function BackButton({ text, onPress }: Props) {
+export default function BackButton({ onPress }: Props) {
   return (
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
@@ -17,7 +16,7 @@ export default function BackButton({ text, onPress }: Props) {
       onPress={onPress}
     >
       <Feather name="arrow-left" size={30} color={color.white} />
-      <Text style={styles.text}>{text}</Text>
+      <Text style={styles.text}>Back</Text>
     </TouchableOpacity>
   );
 }

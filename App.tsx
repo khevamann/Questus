@@ -8,8 +8,9 @@ import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import Reactotron from 'reactotron-react-native';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import store from './redux/store';
+import * as store from './redux/store';
 import CreateGame from './screens/CreateGame/CreateGame';
 import Home from './screens/Home/Home';
 import JoinGame from './screens/JoinGame/JoinGame';
@@ -79,20 +80,22 @@ function App() {
     return null;
   } else {
     return (
-      <Provider store={store}>
-        <SafeAreaProvider>
-          <StatusBar
-            barStyle="dark-content"
-            translucent
-            backgroundColor="#0000"
-          />
-          <NavigationContainer>
-            <RootStack.Navigator mode="modal" headerMode="none">
-              <RootStack.Screen name="Main" component={StackScreen} />
-              <RootStack.Screen name="Vision" component={Vision} />
-            </RootStack.Navigator>
-          </NavigationContainer>
-        </SafeAreaProvider>
+      <Provider store={store.default().store}>
+        <PersistGate loading={null} persistor={store.default().persistor}>
+          <SafeAreaProvider>
+            <StatusBar
+              barStyle="dark-content"
+              translucent
+              backgroundColor="#0000"
+            />
+            <NavigationContainer>
+              <RootStack.Navigator mode="modal" headerMode="none">
+                <RootStack.Screen name="Main" component={StackScreen} />
+                <RootStack.Screen name="Vision" component={Vision} />
+              </RootStack.Navigator>
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </PersistGate>
       </Provider>
     );
   }

@@ -7,8 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
-import DataService from '../../providers/dataservice';
-import { setGameCode, setGameType } from '../../redux/actions/gameAction';
+import { joinGame, setGameType } from '../../redux/actions/gameAction';
 import { RootState } from '../../redux/reducers';
 import { gameTypeSelector } from '../../redux/selectors';
 import { getGameFromChar } from '../../util/helpers';
@@ -42,10 +41,14 @@ export default function JoinGame({ navigation }: JoinGameProps) {
       if (itemNum >= 3 && itemNum <= 12 && gameType !== itemNum)
         dispatch(setGameType(itemNum));
     }
-    if (code.length === 4) {
-      if (DataService.validateCode(code)) {
-        goGame();
-        dispatch(setGameCode(code));
+    if (code.length === 4 && code.match(/[A-Z]\d[A-Z]\d/g)) {
+      //FIXME SHould check if it is a valid code and if so wait goto the game screen. if not show the alert
+
+      dispatch(joinGame(code));
+      if (code !== 'WEDX') {
+        setTimeout(() => {
+          goGame();
+        }, 1000);
       } else {
         Alert.alert(
           'Invalid Game Code',
@@ -58,7 +61,7 @@ export default function JoinGame({ navigation }: JoinGameProps) {
 
   return (
     <View style={styles.container}>
-      <GameHeader backText="Back" onBack={goBack} />
+      <GameHeader onBack={goBack} />
       <Text style={styles.textMsg}>
         Ask your group leader for the code and enter it here.
       </Text>

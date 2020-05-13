@@ -1,18 +1,33 @@
-import * as firebase from 'firebase';
+import Constants from 'expo-constants';
 
-import 'firebase/firestore';
-import firebaseConfig from '../config/firebaseConfig';
+import firebase from '../config/firebaseConfig';
+import { User } from '../util/types';
 
-firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const newUser = async () => {
+  let user: User = {
+    name: 'Player 1',
+    avatar: '',
+    id: Constants.deviceId,
+  };
+  await db
+    .collection('users')
+    .doc(user.id)
+    .get()
+    .then((data) => {
+      if (data.exists) {
+        user = data.data() as User;
+      } else {
+        db.collection('users').doc(user.id).set(user);
+      }
+    });
+
+  return user;
+};
 
 const Firebase = {
-  checkToken: (token: string) => {
-    return firebase
-      .firestore()
-      .collection('activeGames')
-      .doc(`${token}`)
-      .set({ gameId: token });
-  },
+  newUser,
 };
 
 export default Firebase;

@@ -1,16 +1,20 @@
-import { TEST_PLAYERS } from '../../providers/dataservice';
-import { GameData, GameItem, ItemStatus } from '../../util/types';
+import { GameData, GameItem, ItemStatus, PlayerType } from '../../util/types';
 import {
+  CLEAR_GAME,
+  INCREMENT_SCORE,
   SET_GAME_CODE,
   SET_GAME_ITEMS,
   SET_GAME_OPTS,
   SET_GAME_PLAYERS,
   SET_ITEM_COMPLETE,
+  SETUP_GAME,
 } from '../actions/actionTypes';
 
 const initialState: GameData = {
-  players: [TEST_PLAYERS[0]],
-  gameType: 3,
+  gameId: '',
+  isHost: false,
+  players: [],
+  gameType: 0,
   gameCode: '',
   items: [],
 };
@@ -30,8 +34,22 @@ const updateItems = (items: GameItem[][], index: number) => {
     return set;
   });
 };
+
+const addScore = (players: PlayerType[], userId: string) => {
+  return players.map((player) => {
+    if (player.id === userId) return { ...player, score: player.score + 1 };
+    return player;
+  });
+};
+
 const gameReducer = (state = initialState, action: any) => {
   switch (action.type) {
+    case SETUP_GAME:
+      return {
+        ...action.payload,
+        players: state.players,
+        gameType: state.gameType,
+      };
     case SET_GAME_OPTS:
       return { ...state, gameType: action.payload };
     case SET_GAME_CODE:
@@ -45,6 +63,10 @@ const gameReducer = (state = initialState, action: any) => {
       };
     case SET_GAME_PLAYERS:
       return { ...state, players: action.payload };
+    case INCREMENT_SCORE:
+      return { ...state, players: addScore(state.players, action.payload) };
+    case CLEAR_GAME:
+      return initialState;
     default:
       return state;
   }

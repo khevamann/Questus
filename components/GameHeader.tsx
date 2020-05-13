@@ -9,14 +9,14 @@ import { GameModes } from '../util/types';
 import BackButton from './BackButton';
 
 type Props = {
-  backText: string;
   onBack(): void;
 };
 
-export default function GameHeader({ backText, onBack }: Props) {
+export default function GameHeader({ onBack }: Props) {
   const gameType = useSelector<RootState, number>(gameTypeSelector);
   const gameCode = useSelector<RootState, string>(codeSelector);
-  const gameConfig = GameModes[`item${gameType}`];
+  const gameConfig =
+    gameType === 0 ? GameModes[`item3`] : GameModes[`item${gameType}`];
   return (
     <>
       <StatusBar barStyle="light-content" />
@@ -27,7 +27,7 @@ export default function GameHeader({ backText, onBack }: Props) {
           paddingTop: safeAreaInsets.top,
         }}
       >
-        <BackButton text={backText} onPress={onBack} />
+        <BackButton onPress={onBack} />
         <View
           style={{
             ...styles.colorCircle,

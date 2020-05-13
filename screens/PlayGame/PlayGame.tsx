@@ -1,34 +1,30 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { StyleSheet, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import GameHeader from '../../components/GameHeader';
-import DataService from '../../providers/dataservice';
-import { setGameItems } from '../../redux/actions/gameAction';
+import { TEST_PLAYERS } from '../../providers/dataservice';
 import { RootState } from '../../redux/reducers';
-import { gameTypeSelector, itemsSelector } from '../../redux/selectors';
-import { GameItem } from '../../util/types';
+import {
+  gameTypeSelector,
+  itemsSelector,
+  playersSelector,
+} from '../../redux/selectors';
+import { HEADER_TEXT } from '../../util/styles';
+import { GameItem, PlayerType } from '../../util/types';
 import ItemSet from './ItemSet';
+import LeaderBoard from './LeaderBoard';
 
 type PlayGameProps = {
   navigation: StackNavigationProp<StackParams, 'PlayGame'>;
 };
 
-const colors = ['green', 'orange', 'red', 'blue'];
-
 export default function PlayGame({ navigation }: PlayGameProps) {
-  const dispatch = useDispatch();
   const gameType = useSelector<RootState, number>(gameTypeSelector);
+  const players = useSelector<RootState, PlayerType[]>(playersSelector);
   const items = useSelector<RootState, GameItem[][]>(itemsSelector);
-
-  useEffect(() => {
-    DataService.getRandItems(gameType).then((items: GameItem[][]) => {
-      dispatch(setGameItems(items));
-    });
-  }, []);
 
   const goBack = () => {
     navigation.goBack();
@@ -43,11 +39,13 @@ export default function PlayGame({ navigation }: PlayGameProps) {
 
   return (
     <View style={styles.container}>
-      <GameHeader backText="Exit" onBack={goBack} />
+      <GameHeader onBack={goBack} />
+      <Text style={HEADER_TEXT}>LEADERBOARD</Text>
+      <LeaderBoard players={TEST_PLAYERS} maxScore={gameType} />
+      <Text style={HEADER_TEXT}>YOUR LIST</Text>
       {items.map((value, index) => (
         <ItemSet
           key={index}
-          setColor={colors[index]}
           setIndex={index}
           items={value}
           onPress={openCamera}

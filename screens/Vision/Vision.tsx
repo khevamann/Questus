@@ -21,8 +21,14 @@ import { color, fonts, layout, safeAreaInsets, theme } from '../../util/theme';
 import { Feather } from '@expo/vector-icons';
 import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
-import { useDispatch } from 'react-redux';
-import { setItemComplete } from '../../redux/actions/gameAction';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  incrementScore,
+  setItemComplete,
+} from '../../redux/actions/gameAction';
+import { RootState } from '../../redux/reducers';
+import { User } from '../../util/types';
+import { userSelector } from '../../redux/selectors';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -32,6 +38,7 @@ type VisionProps = {
 
 export default function Vision({ navigation, camera, route }: VisionProps) {
   const dispatch = useDispatch();
+  const user = useSelector<RootState, User>(userSelector);
   const [image, setImage] = useState('');
   const [status, setStatus] = useState('');
   const [flash, setFlash] = useState<boolean>(false);
@@ -52,6 +59,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
         setStatus('found');
         Alert.alert('Results', result);
         dispatch(setItemComplete(itemIndex));
+        dispatch(incrementScore(user.id));
         exit();
       } catch (error) {
         console.log(error);

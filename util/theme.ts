@@ -19,12 +19,7 @@ export const color = {
     orange: '#EF7E4D',
     red: '#DB5461',
   },
-  items: {
-    green: '#397F4F',
-    orange: '#EF7E4D',
-    red: '#E08087',
-    blue: '#34609F',
-  },
+  items: ['#49A4A5', '#B296F8', '#E08087', '#E38B33'],
 };
 
 export const theme = {

@@ -13,16 +13,27 @@ export type GameConfig = {
 };
 
 export type PlayerType = {
+  id?: string;
   name: string;
   avatar: string;
+  score?: number;
   isHost?: boolean;
 };
 
 export type GameData = {
+  gameId?: string;
+  gameListener?(): void;
+  isHost: boolean;
   gameType: number;
   players: PlayerType[];
   gameCode: string;
   items: GameItem[][];
+};
+
+export type User = {
+  id: string;
+  name: string;
+  avatar: string;
 };
 
 export type GameItem = {

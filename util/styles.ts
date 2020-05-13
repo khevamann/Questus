@@ -6,6 +6,7 @@ export const HEADER_TEXT: TextStyle = {
   fontFamily: fonts.quicksand.bold,
   fontSize: 18,
   margin: 15,
+  marginTop: 20,
   color: color.light,
 };
 

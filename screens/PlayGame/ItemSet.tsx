@@ -10,7 +10,6 @@ type Props = {
   items: GameItem[];
   onPress(index: number, setIndex: number): void;
   setIndex: number;
-  setColor: string;
 };
 type ItemProps = {
   onPress(): void;
@@ -27,11 +26,7 @@ function Item({ onPress, name, setColor }: ItemProps) {
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
       onPress={onPress}
-      style={[
-        styles.item,
-        styles.large,
-        { backgroundColor: color.items[setColor] },
-      ]}
+      style={[styles.item, styles.large, { backgroundColor: setColor }]}
     >
       <Text style={styles.itemText}>{name}</Text>
     </TouchableOpacity>
@@ -40,7 +35,13 @@ function Item({ onPress, name, setColor }: ItemProps) {
 
 function ItemOff({ complete, setColor }: OffProps) {
   return (
-    <View style={[styles.item, { backgroundColor: color.items[setColor] }]}>
+    <View
+      style={[
+        styles.item,
+        complete === ItemStatus.INCOMPLETE ? styles.itemLock : null,
+        { backgroundColor: setColor },
+      ]}
+    >
       {complete === ItemStatus.COMPLETE ? (
         <Feather name="check" size={35} color={color.success} />
       ) : (
@@ -50,27 +51,21 @@ function ItemOff({ complete, setColor }: OffProps) {
   );
 }
 
-export default function ItemSet({
-  style,
-  setColor,
-  onPress,
-  items,
-  setIndex,
-}: Props) {
+export default function ItemSet({ style, onPress, items, setIndex }: Props) {
   return (
     <View style={[styles.container, style]}>
       {items.map((value, index) =>
         value.status === ItemStatus.INPROGRESS ? (
           <Item
             key={`key${index + setIndex}`}
-            setColor={setColor}
+            setColor={color.items[setIndex % 4]}
             name={value.name}
             onPress={() => onPress(index, setIndex)}
           />
         ) : (
           <ItemOff
             key={`key${index + setIndex}`}
-            setColor={setColor}
+            setColor={color.items[setIndex % 4]}
             complete={value.status}
           />
         )
@@ -87,6 +82,9 @@ const styles = StyleSheet.create({
   },
   large: {
     flexBasis: layout.screenWidth - 90 * 2,
+  },
+  itemLock: {
+    opacity: 0.6,
   },
   item: {
     alignItems: 'center',

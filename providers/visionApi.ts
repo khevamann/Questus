@@ -1,4 +1,4 @@
-import firebaseConfig from '../config/firebaseConfig';
+import { firebaseConfig } from '../config/firebaseConfig';
 
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${firebaseConfig.apiKey}`;
 
@@ -23,6 +23,9 @@ export async function callGoogleVisionAsync(image: string) {
     body: JSON.stringify(body),
   });
   const parsed = await response.json();
+  if (!parsed) {
+    return null;
+  }
   console.log(parsed.responses[0].labelAnnotations);
   return parsed.responses[0].labelAnnotations.reduce(
     (res: string, label: Label) => res + label.description + ', ',

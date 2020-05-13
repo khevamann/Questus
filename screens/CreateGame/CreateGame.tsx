@@ -7,15 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
-import DataService from '../../providers/dataservice';
-import { setGameCode, setGamePlayers } from '../../redux/actions/gameAction';
+import { createGame } from '../../redux/actions/gameAction';
 import { RootState } from '../../redux/reducers';
 import {
   codeSelector,
   gameTypeSelector,
+  isHostSelector,
   playersSelector,
 } from '../../redux/selectors';
-import { generateGameCode } from '../../util/helpers';
 import { HEADER_TEXT } from '../../util/styles';
 import { safeAreaInsets } from '../../util/theme';
 import { PlayerType } from '../../util/types';
@@ -28,24 +27,17 @@ type CreateGameProps = {
 export default function CreateGame({ navigation }: CreateGameProps) {
   const dispatch = useDispatch();
   const players = useSelector<RootState, PlayerType[]>(playersSelector);
+  const isHost = useSelector<RootState, boolean>(isHostSelector);
   const gameType = useSelector<RootState, number>(gameTypeSelector);
   const gameCode = useSelector<RootState, string>(codeSelector);
 
   useEffect(() => {
-    if (gameCode) {
-      DataService.joinGame(gameCode).then((players: PlayerType[]) => {
-        dispatch(setGamePlayers(players));
-      });
-    } else {
-      const newCode = generateGameCode(gameType);
-      DataService.createGame(newCode).then((newCode: string) => {
-        dispatch(setGameCode(newCode));
-      });
+    if (!gameCode) {
+      dispatch(createGame(gameType));
     }
   }, []);
 
   const goBack = () => {
-    dispatch(setGameCode(''));
     navigation.goBack();
   };
   const goGame = () => {
@@ -54,23 +46,26 @@ export default function CreateGame({ navigation }: CreateGameProps) {
 
   return (
     <View style={styles.container}>
-      <GameHeader backText="EXIT" onBack={goBack} />
+      <GameHeader onBack={goBack} />
       <Text style={HEADER_TEXT}>PLAYERS (2-8)</Text>
       <View style={styles.outerPlayers}>
         <View style={styles.players}>
           {players.map((player: PlayerType) => (
-            <Player
-              key={player.name}
-              name={player.name}
-              avatar={player.avatar}
-            />
+            <Player key={player.id} name={player.name} avatar={player.avatar} />
           ))}
         </View>
       </View>
       <BlockButton
         style={{ marginBottom: safeAreaInsets.bottom || 20 }}
-        text={players.length < 2 ? 'WAITING . . .' : 'START GAME'}
-        disabled={players.length < 2}
+        text={
+          players.length < 2
+            ? 'WAITING . . .'
+            : isHost
+            ? 'START GAME'
+            : 'ASK HOST TO START'
+        }
+        /*{FIXME SHOULD BE 2 not 0}*/
+        disabled={!isHost || players.length < 0}
         onPress={goGame}
       />
     </View>

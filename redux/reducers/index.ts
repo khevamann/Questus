@@ -1,18 +1,21 @@
 import { combineReducers } from 'redux';
 import { firestoreReducer } from 'redux-firestore';
 
-import { GameData, User } from '../../util/types';
-import gameData from './gameData';
+import { GameData, Status, User } from '../../util/types';
+import game from './game';
+import status from './status';
 import user from './user';
 
 export const rootReducer = combineReducers({
-  firestoreReducer,
-  gameData,
+  firestore: firestoreReducer,
+  game,
+  status,
   user,
 });
 
 export type RootState = {
-  firestoreReducer: any;
-  gameData: GameData;
+  firestore: any;
+  game: GameData;
+  status: Status;
   user: User;
 };

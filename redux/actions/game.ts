@@ -1,7 +1,13 @@
 import * as firebase from 'firebase';
 import { Dispatch } from 'redux';
 
-import { GameData, GameItem, ItemStatus, PlayerType } from '../../util/types';
+import {
+  GameData,
+  GameItem,
+  GameStatus,
+  ItemStatus,
+  PlayerType,
+} from '../../util/types';
 import { RootState } from '../reducers';
 import {
   CLEAR_GAME,
@@ -11,30 +17,29 @@ import {
   SET_ITEM_COMPLETE,
   SETUP_GAME,
 } from './actionTypes';
+import { joinFailure, joinSuccess, setGameStatus } from './status';
 
 const monitorGame = (dispatch: Dispatch, getState: RootState) => {
   return async (docSnap: firebase.firestore.DocumentSnapshot) => {
+    /* Check if game has been deleted */
     if (!docSnap.exists) {
-      /*TODO: Should be an alert error
-       * Then call
-       * clearGame(); and go back to home*/
-      console.log('GAME HAS BEEN DELETED');
-      return;
+      return dispatch(setGameStatus(GameStatus.DELETED));
     }
-    const gameData = docSnap.data() as GameData;
+
+    const game = docSnap.data() as GameData;
 
     /*If this is the first update from the game*/
-    if (!getState.gameData.gameCode && docSnap.data()?.items !== undefined) {
-      gameData.items = setGameItems(gameData.gameType, docSnap.data()?.items);
+    if (!getState.game.gameCode && docSnap.data()?.items !== undefined) {
+      game.items = setGameItems(game.gameType, docSnap.data()?.items);
     }
 
     dispatch({
       type: SETUP_GAME,
-      payload: gameData,
+      payload: game,
     });
 
     /* Players Change */
-    if (docSnap.data().numPlayers !== getState.gameData.players.length) {
+    if (docSnap.data().numPlayers !== getState.game.players.length) {
       const players = await docSnap.ref.collection('players').get();
       dispatch(
         setGamePlayers(players.docs.map((doc) => doc.data() as PlayerType))
@@ -80,19 +85,20 @@ export const joinGame = (gameCode: string) => {
     getState: () => RootState,
     { getFirestore }: any
   ) => {
+    if (!gameCode.match(/[A-Z]\d[A-Z]\d/g))
+      return dispatch(joinFailure('GAME_DNE'));
+
     getFirestore()
       .collection('activeGames')
       .where('gameCode', '==', gameCode)
       .get()
       .then((querySnapshot: firebase.firestore.QuerySnapshot) => {
         if (querySnapshot.empty) {
-          /* TODO: Should be an error */
-          return console.log('Game Does Not exist');
+          return dispatch(joinFailure('GAME_DNE'));
         }
         const docRef = querySnapshot.docs[0];
         if (docRef.data().playerCount >= 8) {
-          /* TODO: Should be an error */
-          return console.log('This game is full');
+          return dispatch(joinFailure('GAME_FULL'));
         }
 
         /* If game exists add user as a player */
@@ -108,7 +114,6 @@ export const joinGame = (gameCode: string) => {
         const gameListener = docRef.ref.onSnapshot(
           monitorGame(dispatch, getState())
         );
-
         /* Get game items */
         dispatch({
           type: SETUP_GAME,
@@ -119,6 +124,7 @@ export const joinGame = (gameCode: string) => {
             gameListener,
           },
         });
+        dispatch(joinSuccess());
       })
       .catch((err: any) => {
         console.error(err);
@@ -133,21 +139,21 @@ export const clearGame = () => {
     { getFirestore }: any
   ) => {
     /* Unsubscribe from game onSnapshot */
-    if (getState().gameData.gameListener) getState().gameData.gameListener();
+    if (getState().game.gameListener) getState().game.gameListener();
 
     /* Remove self from the game */
     getFirestore()
       .collection('activeGames')
-      .doc(getState().gameData.gameId)
+      .doc(getState().game.gameId)
       .collection('players')
       .doc(getState().user.id)
       .delete();
 
     /* If host remove the player from the game */
-    if (getState().gameData.host === getState().user.id) {
+    if (getState().game.host === getState().user.id) {
       getFirestore()
         .collection('activeGames')
-        .doc(getState().gameData.gameId)
+        .doc(getState().game.gameId)
         .delete();
     }
     dispatch({

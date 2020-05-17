@@ -6,6 +6,18 @@ export enum ItemStatus {
   COMPLETE = 1,
 }
 
+export enum LoadingStatus {
+  FAILED = -1,
+  LOADING = 0,
+  SUCCESS = 1,
+}
+
+export enum GameStatus {
+  DELETED = -1,
+  LOBBY = 0,
+  PLAYING = 1,
+}
+
 export type GameConfig = {
   itemCount: number;
   primaryColor: string;
@@ -18,6 +30,16 @@ export type PlayerType = {
   avatar: string;
   score?: number;
   isHost?: boolean;
+};
+
+export type Status = {
+  join: {
+    status: LoadingStatus;
+    errCode: string;
+  };
+  game: {
+    status: GameStatus;
+  };
 };
 
 export type GameData = {

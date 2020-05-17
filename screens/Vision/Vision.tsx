@@ -22,10 +22,7 @@ import { Feather } from '@expo/vector-icons';
 import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  incrementScore,
-  setItemComplete,
-} from '../../redux/actions/gameAction';
+import { incrementScore, setItemComplete } from '../../redux/actions/game';
 import { RootState } from '../../redux/reducers';
 import { User } from '../../util/types';
 import { userSelector } from '../../redux/selectors';

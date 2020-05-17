@@ -2,15 +2,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
-import { joinGame, setGameType } from '../../redux/actions/gameAction';
-import { RootState } from '../../redux/reducers';
-import { gameTypeSelector } from '../../redux/selectors';
-import { getGameFromChar } from '../../util/helpers';
+import { joinGame } from '../../redux/actions/gameAction';
 import { MSG_TEXT } from '../../util/styles';
 import { safeAreaInsets } from '../../util/theme';
 import CodeInput from './CodeInput';
@@ -22,7 +19,6 @@ type JoinGameProps = {
 export default function JoinGame({ navigation }: JoinGameProps) {
   const [code, updateCode] = useState<string>('');
   const dispatch = useDispatch();
-  const gameType = useSelector<RootState, number>(gameTypeSelector);
 
   const goBack = () => {
     navigation.goBack();
@@ -36,16 +32,14 @@ export default function JoinGame({ navigation }: JoinGameProps) {
 
   const setCode = (code: string) => {
     updateCode(code);
-    if (code.length === 1) {
-      const itemNum = getGameFromChar(code);
-      if (itemNum >= 3 && itemNum <= 12 && gameType !== itemNum)
-        dispatch(setGameType(itemNum));
-    }
     if (code.length === 4 && code.match(/[A-Z]\d[A-Z]\d/g)) {
-      //FIXME SHould check if it is a valid code and if so wait goto the game screen. if not show the alert
-
       dispatch(joinGame(code));
-      if (code !== 'WEDX') {
+      //FIXME SHould check if it is a valid code and if so wait goto the game screen. if not show the alert
+      if (code !== 'QQQQ') {
+        /* TODO: Check if game has started,
+         * if so put people straight to playGame
+         * else put them in game
+         */
         setTimeout(() => {
           goGame();
         }, 1000);

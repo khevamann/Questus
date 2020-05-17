@@ -1,4 +1,4 @@
-import { GameItem, ItemStatus, PlayerType } from '../util/types';
+import { PlayerType } from '../util/types';
 
 export const TEST_PLAYERS: PlayerType[] = [
   {
@@ -42,26 +42,3 @@ export const TEST_PLAYERS: PlayerType[] = [
     score: 1,
   },
 ];
-
-const validateCode = (code: string) => {
-  return code.match(/[A-Z]\d[A-Z]\d/g);
-};
-
-const getRandItems = async (count: number): Promise<GameItem[][]> => {
-  return new Promise((resolve) => {
-    return resolve(
-      Array.from(Array(count / 3)).map((val, index) => [
-        { name: `Item ${index * 3 + 1}`, status: ItemStatus.INPROGRESS },
-        { name: `Item ${index * 3 + 2}`, status: ItemStatus.INCOMPLETE },
-        { name: `Item ${index * 3 + 3}`, status: ItemStatus.INCOMPLETE },
-      ])
-    );
-  });
-};
-
-const DataService = {
-  validateCode,
-  getRandItems,
-};
-
-export default DataService;

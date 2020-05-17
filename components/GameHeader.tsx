@@ -3,9 +3,9 @@ import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../redux/reducers';
-import { codeSelector, gameTypeSelector } from '../redux/selectors';
+import { codeSelector, gameConfigSelector } from '../redux/selectors';
 import { color, fonts, layout, safeAreaInsets } from '../util/theme';
-import { GameModes } from '../util/types';
+import { GameConfig } from '../util/types';
 import BackButton from './BackButton';
 
 type Props = {
@@ -13,10 +13,8 @@ type Props = {
 };
 
 export default function GameHeader({ onBack }: Props) {
-  const gameType = useSelector<RootState, number>(gameTypeSelector);
   const gameCode = useSelector<RootState, string>(codeSelector);
-  const gameConfig =
-    gameType === 0 ? GameModes[`item3`] : GameModes[`item${gameType}`];
+  const gameConfig = useSelector<RootState, GameConfig>(gameConfigSelector);
   return (
     <>
       <StatusBar barStyle="light-content" />

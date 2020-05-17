@@ -32,9 +32,8 @@ export default function CreateGame({ navigation }: CreateGameProps) {
   const gameCode = useSelector<RootState, string>(codeSelector);
 
   useEffect(() => {
-    if (!gameCode) {
-      dispatch(createGame(gameType));
-    }
+    if (gameType === 0) navigation.goBack();
+    if (!gameCode) dispatch(createGame(gameType));
   }, []);
 
   const goBack = () => {

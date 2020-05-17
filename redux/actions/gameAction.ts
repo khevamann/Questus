@@ -1,31 +1,45 @@
 import * as firebase from 'firebase';
 import { Dispatch } from 'redux';
 
-import { generateGameCode } from '../../util/helpers';
-import { GameItem, ItemStatus, PlayerType } from '../../util/types';
+import { GameData, GameItem, ItemStatus, PlayerType } from '../../util/types';
 import { RootState } from '../reducers';
 import {
   CLEAR_GAME,
   INCREMENT_SCORE,
-  SET_GAME_CODE,
   SET_GAME_OPTS,
   SET_GAME_PLAYERS,
   SET_ITEM_COMPLETE,
   SETUP_GAME,
 } from './actionTypes';
 
-const monitorGame = (dispatch: Dispatch) => {
-  return (docSnap: firebase.firestore.QuerySnapshot) => {
-    if (docSnap.size === 0) {
-      /*TODO: Should be an alert error*/
+const monitorGame = (dispatch: Dispatch, getState: RootState) => {
+  return async (docSnap: firebase.firestore.DocumentSnapshot) => {
+    if (!docSnap.exists) {
+      /*TODO: Should be an alert error
+       * Then call
+       * clearGame(); and go back to home*/
       console.log('GAME HAS BEEN DELETED');
       return;
     }
-    dispatch(
-      setGamePlayers(docSnap.docs.map((doc) => doc.data() as PlayerType))
-    );
-    console.log(docSnap.docs.map((doc) => doc.data() as PlayerType));
-    console.log('Game Update!', docSnap.size);
+    const gameData = docSnap.data() as GameData;
+
+    /*If this is the first update from the game*/
+    if (!getState.gameData.gameCode && docSnap.data()?.items !== undefined) {
+      gameData.items = setGameItems(gameData.gameType, docSnap.data()?.items);
+    }
+
+    dispatch({
+      type: SETUP_GAME,
+      payload: gameData,
+    });
+
+    /* Players Change */
+    if (docSnap.data().numPlayers !== getState.gameData.players.length) {
+      const players = await docSnap.ref.collection('players').get();
+      dispatch(
+        setGamePlayers(players.docs.map((doc) => doc.data() as PlayerType))
+      );
+    }
   };
 };
 
@@ -35,27 +49,22 @@ export const createGame = (gameType: number) => {
     getState: () => RootState,
     { getFirestore }: any
   ) => {
-    const gameCode = generateGameCode(gameType);
     getFirestore()
       .collection('activeGames')
-      .add({ gameType, gameCode, host: getState().user.id })
+      .add({ gameType, host: getState().user.id })
       .then((docRef: firebase.firestore.DocumentReference) => {
         docRef
           .collection('players')
           .doc(getState().user.id)
           .set({ ...getState().user, score: 0 });
-        const gameListener = docRef
-          .collection('players')
-          .onSnapshot(monitorGame(dispatch));
-        const items = setGameItems(getState().gameData.gameType);
+        const gameListener = docRef.onSnapshot(
+          monitorGame(dispatch, getState())
+        );
         dispatch({
           type: SETUP_GAME,
           payload: {
-            gameCode,
             gameId: docRef.id,
             gameListener,
-            isHost: true,
-            items,
           },
         });
       })
@@ -78,24 +87,36 @@ export const joinGame = (gameCode: string) => {
       .then((querySnapshot: firebase.firestore.QuerySnapshot) => {
         if (querySnapshot.empty) {
           /* TODO: Should be an error */
-          return console.log('GAME DOes Not exist');
+          return console.log('Game Does Not exist');
         }
         const docRef = querySnapshot.docs[0];
+        if (docRef.data().playerCount >= 8) {
+          /* TODO: Should be an error */
+          return console.log('This game is full');
+        }
+
+        /* If game exists add user as a player */
         docRef.ref
           .collection('players')
           .doc(getState().user.id)
           .set({ ...getState().user, score: 0 });
-        const gameListener = docRef.ref
-          .collection('players')
-          .onSnapshot(monitorGame(dispatch));
-        const items = setGameItems(getState().gameData.gameType);
+        docRef.ref.update({
+          playerCount: firebase.firestore.FieldValue.increment(1),
+        });
+
+        /* Subscribe to all changes from the game */
+        const gameListener = docRef.ref.onSnapshot(
+          monitorGame(dispatch, getState())
+        );
+
+        /* Get game items */
         dispatch({
           type: SETUP_GAME,
           payload: {
+            gameType: docRef.data().gameType,
             gameCode,
             gameId: docRef.id,
             gameListener,
-            items,
           },
         });
       })
@@ -113,20 +134,20 @@ export const clearGame = () => {
   ) => {
     /* Unsubscribe from game onSnapshot */
     if (getState().gameData.gameListener) getState().gameData.gameListener();
-    /*FIXME should be handled as a cloud function
-     * On frontend: delete user from players collection
-     * On server: remove check if player is a host and delete everything */
-    if (getState().gameData.isHost) {
+
+    /* Remove self from the game */
+    getFirestore()
+      .collection('activeGames')
+      .doc(getState().gameData.gameId)
+      .collection('players')
+      .doc(getState().user.id)
+      .delete();
+
+    /* If host remove the player from the game */
+    if (getState().gameData.host === getState().user.id) {
       getFirestore()
         .collection('activeGames')
         .doc(getState().gameData.gameId)
-        .delete();
-    } else {
-      getFirestore()
-        .collection('activeGames')
-        .doc(getState().gameData.gameId)
-        .collection('players')
-        .doc(getState().user.id)
         .delete();
     }
     dispatch({
@@ -141,18 +162,10 @@ export const setGameType = (gameType: number) => ({
   payload: gameType,
 });
 
-export const setGameCode = (code: string) => ({
-  type: SET_GAME_CODE,
-  payload: code,
-});
-
-export const setGameItems = (gameType: number) => {
-  const itemList: GameItem[] = require('../../assets/items.json');
-
+export const setGameItems = (gameType: number, items: GameItem[]) => {
   /* Get random items for game from our items list*/
-  const randItems: GameItem[] = itemList
+  const randItems: GameItem[] = items
     .sort(() => 0.5 - Math.random())
-    .slice(0, gameType)
     .map((item: GameItem, index) =>
       index % 3 === 0
         ? { ...item, status: ItemStatus.INPROGRESS }

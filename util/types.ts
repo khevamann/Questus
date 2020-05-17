@@ -22,8 +22,9 @@ export type PlayerType = {
 
 export type GameData = {
   gameId?: string;
+  startTime?: number;
   gameListener?(): void;
-  isHost: boolean;
+  host: string;
   gameType: number;
   players: PlayerType[];
   gameCode: string;

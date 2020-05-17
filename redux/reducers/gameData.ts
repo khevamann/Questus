@@ -2,7 +2,6 @@ import { GameData, GameItem, ItemStatus, PlayerType } from '../../util/types';
 import {
   CLEAR_GAME,
   INCREMENT_SCORE,
-  SET_GAME_CODE,
   SET_GAME_ITEMS,
   SET_GAME_OPTS,
   SET_GAME_PLAYERS,
@@ -12,7 +11,8 @@ import {
 
 const initialState: GameData = {
   gameId: '',
-  isHost: false,
+  startTime: null,
+  host: '',
   players: [],
   gameType: 0,
   gameCode: '',
@@ -46,14 +46,11 @@ const gameReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case SETUP_GAME:
       return {
+        ...state,
         ...action.payload,
-        players: state.players,
-        gameType: state.gameType,
       };
     case SET_GAME_OPTS:
       return { ...state, gameType: action.payload };
-    case SET_GAME_CODE:
-      return { ...state, gameCode: action.payload };
     case SET_GAME_ITEMS:
       return { ...state, items: action.payload };
     case SET_ITEM_COMPLETE:

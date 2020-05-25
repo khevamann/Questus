@@ -10,6 +10,16 @@ export const HEADER_TEXT: TextStyle = {
   color: color.light,
 };
 
+export const bungeeText = (size: number) => {
+  return {
+    fontFamily: fonts.bungee,
+    lineHeight: size,
+    fontSize: size,
+    marginBottom: -size / 5,
+    color: color.white,
+  };
+};
+
 export const MSG_TEXT: TextStyle = {
   fontFamily: fonts.quicksand.medium,
   textTransform: 'uppercase',

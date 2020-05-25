@@ -28,6 +28,14 @@ const monitorGame = (dispatch: Dispatch, getState: RootState) => {
 
     const game = docSnap.data() as GameData;
 
+    /* Game Start */
+    console.log('HI:', getState.game.startTime, game.startTime);
+    if (!getState.game.startTime && game.startTime !== undefined) {
+      setTimeout(() => {
+        dispatch(setGameStatus(GameStatus.PLAYING));
+      }, game.startTime - Date.now());
+    }
+
     /*If this is the first update from the game*/
     if (!getState.game.gameCode && docSnap.data()?.items !== undefined) {
       game.items = setGameItems(game.gameType, docSnap.data()?.items);
@@ -87,7 +95,6 @@ export const joinGame = (gameCode: string) => {
   ) => {
     if (!gameCode.match(/[A-Z]\d[A-Z]\d/g))
       return dispatch(joinFailure('GAME_DNE'));
-
     getFirestore()
       .collection('activeGames')
       .where('gameCode', '==', gameCode)
@@ -122,6 +129,7 @@ export const joinGame = (gameCode: string) => {
             gameCode,
             gameId: docRef.id,
             gameListener,
+            startTime: docRef.data().startTime,
           },
         });
         dispatch(joinSuccess());
@@ -149,7 +157,7 @@ export const clearGame = () => {
       .doc(getState().user.id)
       .delete();
 
-    /* If host remove the player from the game */
+    /* If host delete the game */
     if (getState().game.host === getState().user.id) {
       getFirestore()
         .collection('activeGames')
@@ -160,6 +168,21 @@ export const clearGame = () => {
       type: CLEAR_GAME,
       payload: 0,
     });
+  };
+};
+export const startGame = () => {
+  return (
+    dispatch: Dispatch,
+    getState: () => RootState,
+    { getFirestore }: any
+  ) => {
+    /* Remove self from the game */
+    const startTime = new Date();
+    startTime.setSeconds(startTime.getSeconds() + 3);
+    getFirestore()
+      .collection('activeGames')
+      .doc(getState().game.gameId)
+      .update({ startTime: startTime.getTime() });
   };
 };
 

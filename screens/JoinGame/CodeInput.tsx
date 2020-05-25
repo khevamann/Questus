@@ -9,7 +9,8 @@ import {
   TextInputKeyPressEventData,
 } from 'react-native';
 
-import { color, fonts } from '../../util/theme';
+import { bungeeText } from '../../util/styles';
+import { color } from '../../util/theme';
 
 type Props = {
   updateCode(code: string): any;
@@ -111,10 +112,7 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   text: {
-    marginTop: 8,
-    fontFamily: fonts.bungee,
+    ...bungeeText(50),
     color: color.blue,
-    fontSize: 50,
-    lineHeight: 50,
   },
 });

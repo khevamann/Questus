@@ -9,7 +9,7 @@ const initialState: Status = {
 const statusReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case SET_JOIN_STATUS:
-      return { ...state, joinGame: action.payload };
+      return { ...state, join: action.payload };
     case SET_GAME_STATUS:
       return { ...state, game: action.payload };
     default:

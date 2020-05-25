@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { color, fonts } from '../../util/theme';
+import { bungeeText } from '../../util/styles';
+import { color } from '../../util/theme';
 
 export default function HomeTitle() {
   return (
@@ -20,19 +21,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   qText: {
-    fontFamily: fonts.bungee,
+    ...bungeeText(120),
     color: color.blue,
-    fontSize: 120,
-    lineHeight: 120,
-    padding: 0,
-    margin: 0,
   },
   mainText: {
-    fontFamily: fonts.bungee,
+    ...bungeeText(60),
     color: color.blue,
-    fontSize: 60,
-    lineHeight: 60,
-    padding: 0,
-    margin: 0,
   },
 });

@@ -1,13 +1,13 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
-import { clearGame, createGame } from '../../redux/actions/game';
+import { clearGame, createGame, startGame } from '../../redux/actions/game';
 import { setGameStatus } from '../../redux/actions/status';
 import { RootState } from '../../redux/reducers';
 import { errors } from '../../redux/reducers/status';
@@ -17,23 +17,27 @@ import {
   gameTypeSelector,
   isHostSelector,
   playersSelector,
+  startSelector,
 } from '../../redux/selectors';
 import { HEADER_TEXT } from '../../util/styles';
 import { safeAreaInsets } from '../../util/theme';
 import { GameStatus, PlayerType } from '../../util/types';
 import Player from './Player';
+import StartOverlay from './StartOverlay';
 
 type CreateGameProps = {
   navigation: StackNavigationProp<StackParams, 'CreateGame'>;
 };
 
 export default function CreateGame({ navigation }: CreateGameProps) {
+  const [startTime, setStartTime] = useState<number>(-1);
   const dispatch = useDispatch();
   const players = useSelector<RootState, PlayerType[]>(playersSelector);
   const status = useSelector<RootState, GameStatus>(gameStatus);
   const isHost = useSelector<RootState, boolean>(isHostSelector);
   const gameType = useSelector<RootState, number>(gameTypeSelector);
   const gameCode = useSelector<RootState, string>(codeSelector);
+  const gameStart = useSelector<RootState, number>(startSelector);
 
   useEffect(() => {
     if (gameType === 0) navigation.goBack();
@@ -43,7 +47,10 @@ export default function CreateGame({ navigation }: CreateGameProps) {
   useEffect(() => {
     if (status === GameStatus.LOBBY) return;
     if (status === GameStatus.PLAYING) {
-      navigation.navigate('PlayGame');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }, { name: 'PlayGame' }],
+      });
     } else {
       dispatch(clearGame());
       Alert.alert(errors['GAME_DELETED'].title, errors['GAME_DELETED'].message);
@@ -52,39 +59,52 @@ export default function CreateGame({ navigation }: CreateGameProps) {
     dispatch(setGameStatus(GameStatus.LOBBY));
   }, [status]);
 
+  useEffect(() => {
+    if (!gameStart) return;
+    const interval = setInterval(() => {
+      const startDiff = Math.ceil((gameStart - Date.now()) / 1000);
+      setStartTime(startDiff);
+      if (startDiff <= 0) {
+        clearInterval(interval);
+        setStartTime(-1);
+      }
+    }, 1000);
+  }, [gameStart]);
+
   const goBack = () => {
     navigation.goBack();
   };
   const goGame = () => {
-    dispatch(setGameStatus(GameStatus.PLAYING));
+    dispatch(startGame());
   };
-
-  return (
-    <View style={styles.container}>
-      <GameHeader onBack={goBack} />
-      <Text style={HEADER_TEXT}>PLAYERS (2-8)</Text>
-      <View style={styles.outerPlayers}>
-        <View style={styles.players}>
-          {players.map((player: PlayerType) => (
-            <Player key={player.id} name={player.name} avatar={player.avatar} />
-          ))}
+  if (gameStart && gameStart >= Date.now()) {
+    return <StartOverlay startTime={startTime} />;
+  } else {
+    return (
+      <View style={styles.container}>
+        <GameHeader onBack={goBack} />
+        <Text style={HEADER_TEXT}>PLAYERS (2-8)</Text>
+        <View style={styles.outerPlayers}>
+          <View style={styles.players}>
+            {players.map((player: PlayerType) => (
+              <Player
+                key={player.id}
+                name={player.name}
+                avatar={player.avatar}
+              />
+            ))}
+          </View>
         </View>
+        <BlockButton
+          style={{ marginBottom: safeAreaInsets.bottom || 20 }}
+          /*{FIXME SHOULD BE 2 not 0}*/
+          text={players.length > 0 && isHost ? 'START GAME' : 'WAITING . . .'}
+          disabled={!isHost || players.length < 0}
+          onPress={goGame}
+        />
       </View>
-      <BlockButton
-        style={{ marginBottom: safeAreaInsets.bottom || 20 }}
-        text={
-          players.length < 2
-            ? 'WAITING . . .'
-            : isHost
-            ? 'START GAME'
-            : 'ASK HOST TO START'
-        }
-        /*{FIXME SHOULD BE 2 not 0}*/
-        disabled={!isHost || players.length < 0}
-        onPress={goGame}
-      />
-    </View>
-  );
+    );
+  }
 }
 
 const styles = StyleSheet.create({

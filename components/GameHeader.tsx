@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '../redux/reducers';
 import { codeSelector, gameConfigSelector } from '../redux/selectors';
+import { bungeeText } from '../util/styles';
 import { color, fonts, layout, safeAreaInsets } from '../util/theme';
 import { GameConfig } from '../util/types';
 import BackButton from './BackButton';
@@ -34,7 +35,7 @@ export default function GameHeader({ onBack }: Props) {
         />
         <View style={styles.codeCont}>
           <Text style={styles.codeTitle}>GAME CODE</Text>
-          <Text style={styles.gameCode}>{gameCode || 'QQQQ'}</Text>
+          <Text style={bungeeText(40)}>{gameCode || 'QQQQ'}</Text>
         </View>
       </View>
     </>
@@ -58,12 +59,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: color.white,
     fontSize: 20,
-  },
-  gameCode: {
-    fontFamily: fonts.bungee,
-    color: color.white,
-    fontSize: 40,
-    lineHeight: 40,
   },
   colorCircle: {
     width: 200,

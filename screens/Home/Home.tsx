@@ -10,7 +10,11 @@ import Firebase from '../../providers/firebase';
 import { clearGame, setGameType } from '../../redux/actions/game';
 import { setUser } from '../../redux/actions/user';
 import { RootState } from '../../redux/reducers';
-import { gameTypeSelector, userSelector } from '../../redux/selectors';
+import {
+  gameTypeSelector,
+  startSelector,
+  userSelector,
+} from '../../redux/selectors';
 import { MSG_TEXT } from '../../util/styles';
 import { setInsets } from '../../util/theme';
 import { User } from '../../util/types';
@@ -26,6 +30,7 @@ export default function Home({ navigation }: HomeProps) {
   const insets = useSafeArea();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>(userSelector);
+  const startTime = useSelector<RootState, number>(startSelector);
   const gameType = useSelector<RootState, number>(gameTypeSelector);
 
   React.useEffect(() => {
@@ -52,6 +57,7 @@ export default function Home({ navigation }: HomeProps) {
     }
     navigation.navigate('JoinGame');
   };
+
   const goCreate = (newGame: number) => {
     if (gameType !== 0) {
       Alert.alert(
@@ -68,7 +74,8 @@ export default function Home({ navigation }: HomeProps) {
     dispatch(clearGame());
   };
   const continueGame = () => {
-    navigation.navigate('CreateGame');
+    const inProgress = startTime && startTime <= 0;
+    navigation.navigate(inProgress ? 'PlayGame' : 'CreateGame');
   };
 
   return (

@@ -2,7 +2,8 @@ import { Feather } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { color, fonts, theme } from '../util/theme';
+import { bungeeText } from '../util/styles';
+import { color, theme } from '../util/theme';
 
 type Props = {
   onPress(): void;
@@ -16,7 +17,7 @@ export default function BackButton({ onPress }: Props) {
       onPress={onPress}
     >
       <Feather name="arrow-left" size={30} color={color.white} />
-      <Text style={styles.text}>Back</Text>
+      <Text style={bungeeText(20)}>Back</Text>
     </TouchableOpacity>
   );
 }
@@ -32,13 +33,5 @@ const styles = StyleSheet.create({
     height: 45,
     borderRadius: 35,
     margin: 10,
-  },
-  text: {
-    fontFamily: fonts.bungee,
-    color: color.white,
-    fontSize: 20,
-    padding: 0,
-    lineHeight: 20,
-    top: 2,
   },
 });

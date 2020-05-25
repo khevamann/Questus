@@ -11,6 +11,7 @@ export const isHostSelector = (state: RootState) => {
   return state.game.host === state.user.id;
 };
 export const codeSelector = (state: RootState) => state.game.gameCode;
+export const startSelector = (state: RootState) => state.game.startTime;
 export const itemsSelector = (state: RootState) => state.game.items;
 
 export const userSelector = (state: RootState) => state.user;

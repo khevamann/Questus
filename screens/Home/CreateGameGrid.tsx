@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { color, fonts, theme } from '../../util/theme';
+import { bungeeText } from '../../util/styles';
+import { color, layout, theme } from '../../util/theme';
 import { GameConfig, GameModes } from '../../util/types';
 
 type Props = {
@@ -53,15 +54,16 @@ const styles = StyleSheet.create({
     backgroundColor: color.purple,
     flexBasis: '40%',
     margin: 10,
-    height: 100,
+    minHeight: 100,
+    height: ((layout.screenWidth - 20) / 2) * 0.4,
+    maxHeight: layout.screenHeight / 5,
     borderRadius: 30,
     overflow: 'hidden',
   },
   text: {
-    fontFamily: fonts.bungee,
-    color: color.white,
-    fontSize: 20,
-    top: 35,
+    position: 'absolute',
+    ...bungeeText(20),
+    bottom: 5,
   },
   colorCircle: {
     width: 100,

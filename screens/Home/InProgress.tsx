@@ -68,12 +68,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 10,
   },
-  gameCode: {
-    fontFamily: fonts.bungee,
-    color: color.white,
-    fontSize: 40,
-    lineHeight: 40,
-  },
   colorCircle: {
     width: 40,
     height: 40,

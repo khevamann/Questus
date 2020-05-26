@@ -1,4 +1,5 @@
 import { firebaseConfig } from '../config/firebaseConfig';
+import { GameItem } from '../util/types';
 
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${firebaseConfig.apiKey}`;
 
@@ -32,6 +33,13 @@ export async function callGoogleVisionAsync(image: string) {
     ''
   );
 }
+
+export const isItemMatch = (results: string[], item: GameItem) => {
+  results.forEach((res) => {
+    if (res === item.name) return true;
+  });
+  return false;
+};
 
 type Label = {
   description: string;

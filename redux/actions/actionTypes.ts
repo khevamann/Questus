@@ -1,4 +1,5 @@
 export const SET_GAME_OPTS = 'SET_GAME_OPTS';
+export const SET_GAME_OVER = 'SET_GAME_OVER';
 export const SETUP_GAME = 'SETUP_GAME';
 export const SET_GAME_ITEMS = 'SET_GAME_ITEMS';
 export const SET_ITEM_COMPLETE = 'SET_ITEM_COMPLETE';

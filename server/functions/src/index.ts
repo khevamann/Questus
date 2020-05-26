@@ -29,6 +29,13 @@ export const createGame = functions.firestore
       gameCode: generateGameCode(gameNum),
     });
   });
+//
+// export const setLeaders = functions.firestore
+//   .document('activeGames/{gameId}/players/{playerId}')
+//   .onUpdate(async (change: Change<DocumentSnapshot>) => {
+//     if (change.after.data() === undefined) throw new Error('Game Deleted...');
+//     change.after.ref.parent.parent?.collection('leaders').
+//   });
 
 const getGameNumber = async (): Promise<number> => {
   const configRef = admin.firestore().collection('config').doc('game-config');

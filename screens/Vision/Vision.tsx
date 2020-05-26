@@ -16,16 +16,17 @@ import {
 } from 'react-native';
 
 import { StackParams } from '../../App';
-import { callGoogleVisionAsync } from '../../providers/visionApi';
+import { callGoogleVisionAsync, isItemMatch } from '../../providers/visionApi';
 import { color, fonts, layout, safeAreaInsets, theme } from '../../util/theme';
 import { Feather } from '@expo/vector-icons';
 import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { incrementScore, setItemComplete } from '../../redux/actions/game';
+import { setItemComplete } from '../../redux/actions/game';
 import { RootState } from '../../redux/reducers';
 import { User } from '../../util/types';
 import { userSelector } from '../../redux/selectors';
+import Firebase from '../../providers/firebase';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -40,7 +41,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
   const [status, setStatus] = useState('');
   const [flash, setFlash] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState(false);
-  const { itemIndex, itemName } = route.params;
+  const { itemIndex, item } = route.params;
 
   const takePictureAsync = async () => {
     setStatus('searching');
@@ -52,12 +53,14 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
       setImage(uri);
       try {
         const result = await callGoogleVisionAsync(base64);
-        console.log(result);
-        setStatus('found');
-        Alert.alert('Results', result);
-        dispatch(setItemComplete(itemIndex));
-        dispatch(incrementScore(user.id));
-        exit();
+        if (isItemMatch(result, item)) {
+          setStatus('found');
+          console.log(result);
+          Alert.alert('Results', result);
+          Firebase.incrementScore();
+          dispatch(setItemComplete(itemIndex));
+          exit();
+        }
       } catch (error) {
         console.log(error);
       }
@@ -106,7 +109,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
             }}
           >
             <View style={styles.itemCont}>
-              <Text style={styles.itemText}>{itemName}</Text>
+              <Text style={styles.itemText}>{item.name}</Text>
             </View>
             <FocusGrid style={styles.focusGrid}></FocusGrid>
             <View style={styles.options}>

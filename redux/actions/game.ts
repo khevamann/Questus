@@ -1,6 +1,7 @@
 import * as firebase from 'firebase';
 import { Dispatch } from 'redux';
 
+import Firebase from '../../providers/firebase';
 import {
   GameData,
   GameItem,
@@ -11,7 +12,6 @@ import {
 import { RootState } from '../reducers';
 import {
   CLEAR_GAME,
-  INCREMENT_SCORE,
   SET_GAME_OPTS,
   SET_GAME_PLAYERS,
   SET_ITEM_COMPLETE,
@@ -29,7 +29,6 @@ const monitorGame = (dispatch: Dispatch, getState: RootState) => {
     const game = docSnap.data() as GameData;
 
     /* Game Start */
-    console.log('HI:', getState.game.startTime, game.startTime);
     if (!getState.game.startTime && game.startTime !== undefined) {
       setTimeout(() => {
         dispatch(setGameStatus(GameStatus.PLAYING));
@@ -45,98 +44,106 @@ const monitorGame = (dispatch: Dispatch, getState: RootState) => {
       type: SETUP_GAME,
       payload: game,
     });
+  };
+};
 
-    /* Players Change */
-    if (docSnap.data().numPlayers !== getState.game.players.length) {
-      const players = await docSnap.ref.collection('players').get();
-      dispatch(
-        setGamePlayers(players.docs.map((doc) => doc.data() as PlayerType))
-      );
-    }
+const monitorPlayers = (dispatch: Dispatch, getState: RootState) => {
+  return (docSnap: firebase.firestore.QuerySnapshot) => {
+    if (docSnap.size === 0) return;
+    const players: PlayerType[] = [];
+    docSnap.docs.forEach((doc: firebase.firestore.DocumentData) => {
+      const player = doc.data() as PlayerType;
+      if (player.score >= getState.game.gameType) Firebase.gameOver(player.id);
+      players.push(player);
+    });
+
+    dispatch({
+      type: SET_GAME_PLAYERS,
+      payload: players,
+    });
   };
 };
 
 export const createGame = (gameType: number) => {
-  return (
+  return async (
     dispatch: Dispatch,
     getState: () => RootState,
     { getFirestore }: any
   ) => {
-    getFirestore()
+    const docRef = await getFirestore()
       .collection('activeGames')
-      .add({ gameType, host: getState().user.id })
-      .then((docRef: firebase.firestore.DocumentReference) => {
-        docRef
-          .collection('players')
-          .doc(getState().user.id)
-          .set({ ...getState().user, score: 0 });
-        const gameListener = docRef.onSnapshot(
-          monitorGame(dispatch, getState())
-        );
-        dispatch({
-          type: SETUP_GAME,
-          payload: {
-            gameId: docRef.id,
-            gameListener,
-          },
-        });
-      })
-      .catch((err: any) => {
-        console.error(err);
-      });
+      .add({ gameType, host: getState().user.id });
+    docRef
+      .collection('players')
+      .doc(getState().user.id)
+      .set({ ...getState().user, score: 0 })
+      .then();
+    const gameListener = docRef.onSnapshot(monitorGame(dispatch, getState()));
+    const playerListener = docRef
+      .collection('players')
+      .onSnapshot(monitorPlayers(dispatch, getState()));
+
+    dispatch({
+      type: SETUP_GAME,
+      payload: {
+        gameId: docRef.id,
+        snapshots: [gameListener, playerListener],
+      },
+    });
   };
 };
 
 export const joinGame = (gameCode: string) => {
-  return (
+  return async (
     dispatch: Dispatch,
     getState: () => RootState,
     { getFirestore }: any
   ) => {
     if (!gameCode.match(/[A-Z]\d[A-Z]\d/g))
       return dispatch(joinFailure('GAME_DNE'));
-    getFirestore()
+    const querySnapshot = await getFirestore()
       .collection('activeGames')
       .where('gameCode', '==', gameCode)
-      .get()
-      .then((querySnapshot: firebase.firestore.QuerySnapshot) => {
-        if (querySnapshot.empty) {
-          return dispatch(joinFailure('GAME_DNE'));
-        }
-        const docRef = querySnapshot.docs[0];
-        if (docRef.data().playerCount >= 8) {
-          return dispatch(joinFailure('GAME_FULL'));
-        }
+      .get();
+    if (querySnapshot.empty) {
+      return dispatch(joinFailure('GAME_DNE'));
+    }
+    const docRef = querySnapshot.docs[0];
+    if (docRef.data().playerCount >= 8) {
+      return dispatch(joinFailure('GAME_FULL'));
+    }
 
-        /* If game exists add user as a player */
-        docRef.ref
-          .collection('players')
-          .doc(getState().user.id)
-          .set({ ...getState().user, score: 0 });
-        docRef.ref.update({
-          playerCount: firebase.firestore.FieldValue.increment(1),
-        });
-
-        /* Subscribe to all changes from the game */
-        const gameListener = docRef.ref.onSnapshot(
-          monitorGame(dispatch, getState())
-        );
-        /* Get game items */
-        dispatch({
-          type: SETUP_GAME,
-          payload: {
-            gameType: docRef.data().gameType,
-            gameCode,
-            gameId: docRef.id,
-            gameListener,
-            startTime: docRef.data().startTime,
-          },
-        });
-        dispatch(joinSuccess());
+    /* If game exists add user as a player */
+    docRef.ref
+      .collection('players')
+      .doc(getState().user.id)
+      .set({ ...getState().user, score: 0 })
+      .then();
+    docRef.ref
+      .update({
+        playerCount: firebase.firestore.FieldValue.increment(1),
       })
-      .catch((err: any) => {
-        console.error(err);
-      });
+      .then();
+
+    /* Subscribe to all changes from the game */
+    const gameListener = docRef.ref.onSnapshot(
+      monitorGame(dispatch, getState())
+    );
+    const playerListener = docRef.ref
+      .collection('players')
+      .onSnapshot(monitorPlayers(dispatch, getState()));
+    /* Get game items */
+    dispatch({
+      type: SETUP_GAME,
+      payload: {
+        gameType: docRef.data().gameType,
+        gameCode,
+        gameId: docRef.id,
+        snapshots: [gameListener, playerListener],
+        startTime: docRef.data().startTime,
+      },
+    });
+    dispatch(joinSuccess());
   };
 };
 
@@ -146,8 +153,11 @@ export const clearGame = () => {
     getState: () => RootState,
     { getFirestore }: any
   ) => {
-    /* Unsubscribe from game onSnapshot */
-    if (getState().game.gameListener) getState().game.gameListener();
+    /* Unsubscribe from game and player onSnapshot */
+    try {
+      getState().game.snapshots.gameListener();
+      getState().game.snapshots.playerListener();
+    } catch (e) {}
 
     /* Remove self from the game */
     getFirestore()
@@ -168,21 +178,6 @@ export const clearGame = () => {
       type: CLEAR_GAME,
       payload: 0,
     });
-  };
-};
-export const startGame = () => {
-  return (
-    dispatch: Dispatch,
-    getState: () => RootState,
-    { getFirestore }: any
-  ) => {
-    /* Remove self from the game */
-    const startTime = new Date();
-    startTime.setSeconds(startTime.getSeconds() + 3);
-    getFirestore()
-      .collection('activeGames')
-      .doc(getState().game.gameId)
-      .update({ startTime: startTime.getTime() });
   };
 };
 
@@ -210,14 +205,4 @@ export const setGameItems = (gameType: number, items: GameItem[]) => {
 export const setItemComplete = (index: number) => ({
   type: SET_ITEM_COMPLETE,
   payload: index,
-});
-
-export const setGamePlayers = (players: PlayerType[]) => ({
-  type: SET_GAME_PLAYERS,
-  payload: players,
-});
-
-export const incrementScore = (userId: string) => ({
-  type: INCREMENT_SCORE,
-  payload: userId,
 });

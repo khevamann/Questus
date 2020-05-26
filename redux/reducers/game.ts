@@ -1,7 +1,7 @@
-import { GameData, GameItem, ItemStatus, PlayerType } from '../../util/types';
+import Firebase from '../../providers/firebase';
+import { GameData, GameItem, ItemStatus } from '../../util/types';
 import {
   CLEAR_GAME,
-  INCREMENT_SCORE,
   SET_GAME_ITEMS,
   SET_GAME_OPTS,
   SET_GAME_PLAYERS,
@@ -35,16 +35,10 @@ const updateItems = (items: GameItem[][], index: number) => {
   });
 };
 
-const addScore = (players: PlayerType[], userId: string) => {
-  return players.map((player) => {
-    if (player.id === userId) return { ...player, score: player.score + 1 };
-    return player;
-  });
-};
-
 const gameReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case SETUP_GAME:
+      if (action.payload.gameId) Firebase.setGameId(action.payload.gameId);
       return {
         ...state,
         ...action.payload,
@@ -60,9 +54,8 @@ const gameReducer = (state = initialState, action: any) => {
       };
     case SET_GAME_PLAYERS:
       return { ...state, players: action.payload };
-    case INCREMENT_SCORE:
-      return { ...state, players: addScore(state.players, action.payload) };
     case CLEAR_GAME:
+      Firebase.setGameId('');
       return initialState;
     default:
       return state;

@@ -1,20 +1,19 @@
 import * as React from 'react';
 import { Image } from 'react-native';
 
-import { AVATAR_LARGE } from '../util/styles';
-
 type Props = {
   src: string;
+  style?: any;
 };
 
-export default function PlayerAvatar({ src }: Props) {
+export default function PlayerAvatar({ src, style }: Props) {
   return (
     <>
       {src !== '' ? (
-        <Image style={AVATAR_LARGE} source={{ uri: src }} />
+        <Image style={style} source={{ uri: src }} />
       ) : (
         <Image
-          style={AVATAR_LARGE}
+          style={style}
           source={require('../assets/images/profileBlank.png')}
         />
       )}

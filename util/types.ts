@@ -45,7 +45,10 @@ export type Status = {
 export type GameData = {
   gameId?: string;
   startTime?: number;
-  gameListener?(): void;
+  snapshots?: {
+    gameListener?(): void;
+    playerListener?(): void;
+  };
   host: string;
   gameType: number;
   players: PlayerType[];

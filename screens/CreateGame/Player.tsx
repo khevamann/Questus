@@ -2,13 +2,14 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import PlayerAvatar from '../../components/PlayerAvatar';
+import { AVATAR_LARGE } from '../../util/styles';
 import { color, fonts } from '../../util/theme';
 import { PlayerType } from '../../util/types';
 
 const Player = ({ name, avatar }: PlayerType) => {
   return (
     <View style={styles.player}>
-      <PlayerAvatar src={avatar} />
+      <PlayerAvatar style={AVATAR_LARGE} src={avatar} />
       <Text style={styles.playerName}>{name}</Text>
     </View>
   );

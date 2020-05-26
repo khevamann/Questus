@@ -16,6 +16,7 @@ import Home from './screens/Home/Home';
 import JoinGame from './screens/JoinGame/JoinGame';
 import PlayGame from './screens/PlayGame/PlayGame';
 import Vision from './screens/Vision/Vision';
+import { GameItem } from './util/types';
 
 export type RootStackParams = {
   Main: undefined;
@@ -29,7 +30,7 @@ export type StackParams = {
   PlayGame: undefined;
   Vision: {
     itemIndex: number;
-    itemName: string;
+    item: GameItem;
   };
 };
 

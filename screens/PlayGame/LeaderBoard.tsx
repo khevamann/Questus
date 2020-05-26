@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import PlayerAvatar from '../../components/PlayerAvatar';
 import { color, fonts, layout } from '../../util/theme';
 import { PlayerType } from '../../util/types';
 
@@ -22,7 +23,10 @@ const LeaderItem = ({
 }: LeaderProps) => {
   return (
     <View style={styles.leaderCont}>
-      <Image style={styles.leaderImg} source={{ uri: avatar }} />
+      <PlayerAvatar
+        style={{ ...styles.leaderImg, borderColor: color.items[bColor] }}
+        src={avatar}
+      />
       <View style={styles.leaderProgCont}>
         <View
           style={[

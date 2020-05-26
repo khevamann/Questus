@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
-import { clearGame, createGame, startGame } from '../../redux/actions/game';
+import Firebase from '../../providers/firebase';
+import { clearGame, createGame } from '../../redux/actions/game';
 import { setGameStatus } from '../../redux/actions/status';
 import { RootState } from '../../redux/reducers';
 import { errors } from '../../redux/reducers/status';
@@ -75,7 +76,7 @@ export default function CreateGame({ navigation }: CreateGameProps) {
     navigation.goBack();
   };
   const goGame = () => {
-    dispatch(startGame());
+    Firebase.startGame();
   };
   if (gameStart && gameStart >= Date.now()) {
     return <StartOverlay startTime={startTime} />;

@@ -1,11 +1,11 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import GameHeader from '../../components/GameHeader';
-import { TEST_PLAYERS } from '../../providers/dataservice';
 import { RootState } from '../../redux/reducers';
 import {
   gameTypeSelector,
@@ -26,6 +26,10 @@ export default function PlayGame({ navigation }: PlayGameProps) {
   const players = useSelector<RootState, PlayerType[]>(playersSelector);
   const items = useSelector<RootState, GameItem[][]>(itemsSelector);
 
+  useEffect(() => {
+    if (gameType === 0) goBack();
+  }, []);
+
   const goBack = () => {
     navigation.goBack();
   };
@@ -33,7 +37,7 @@ export default function PlayGame({ navigation }: PlayGameProps) {
   const openCamera = (index: number, setIndex: number) => {
     navigation.navigate('Vision', {
       itemIndex: index + setIndex * 3,
-      itemName: items[setIndex][index].name,
+      item: items[setIndex][index],
     });
   };
 
@@ -41,7 +45,7 @@ export default function PlayGame({ navigation }: PlayGameProps) {
     <View style={styles.container}>
       <GameHeader onBack={goBack} />
       <Text style={HEADER_TEXT}>LEADERBOARD</Text>
-      <LeaderBoard players={TEST_PLAYERS} maxScore={gameType} />
+      <LeaderBoard players={players} maxScore={gameType} />
       <Text style={HEADER_TEXT}>YOUR LIST</Text>
       {items.map((value, index) => (
         <ItemSet

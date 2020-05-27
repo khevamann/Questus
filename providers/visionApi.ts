@@ -24,20 +24,23 @@ export async function callGoogleVisionAsync(image: string) {
     body: JSON.stringify(body),
   });
   const parsed = await response.json();
-  if (!parsed) {
-    return null;
+  if (
+    !parsed ||
+    parsed.responses.length === 0 ||
+    parsed.responses[0].labelAnnotations === 0
+  ) {
+    return [];
   }
-  console.log(parsed.responses[0].labelAnnotations);
-  return parsed.responses[0].labelAnnotations.reduce(
-    (res: string, label: Label) => res + label.description + ', ',
-    ''
+  return parsed.responses[0].labelAnnotations.map((label: Label) =>
+    label.description.toLowerCase()
   );
 }
 
 export const isItemMatch = (results: string[], item: GameItem) => {
-  results.forEach((res) => {
-    if (res === item.name) return true;
-  });
+  for (const res of results) {
+    if (res.indexOf(item.name) !== -1 || item.name.indexOf(res) !== -1)
+      return true;
+  }
   return false;
 };
 

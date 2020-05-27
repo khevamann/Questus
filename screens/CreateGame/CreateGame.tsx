@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
@@ -9,9 +9,8 @@ import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
 import Firebase from '../../providers/firebase';
 import { clearGame, createGame } from '../../redux/actions/game';
-import { setGameStatus } from '../../redux/actions/status';
+import { displayAlert, setGameStatus } from '../../redux/actions/status';
 import { RootState } from '../../redux/reducers';
-import { errors } from '../../redux/reducers/status';
 import {
   codeSelector,
   gameStatus,
@@ -54,7 +53,7 @@ export default function CreateGame({ navigation }: CreateGameProps) {
       });
     } else {
       dispatch(clearGame());
-      Alert.alert(errors['GAME_DELETED'].title, errors['GAME_DELETED'].message);
+      dispatch(displayAlert('GAME_DELETED'));
       goBack();
     }
     dispatch(setGameStatus(GameStatus.LOBBY));

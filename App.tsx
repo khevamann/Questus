@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 import Reactotron from 'reactotron-react-native';
 import { PersistGate } from 'redux-persist/integration/react';
 
+import Alert from './components/Alert';
 import * as store from './redux/store';
 import CreateGame from './screens/CreateGame/CreateGame';
 import Home from './screens/Home/Home';
@@ -89,6 +90,7 @@ function App() {
               translucent
               backgroundColor="#0000"
             />
+            <Alert />
             <NavigationContainer>
               <RootStack.Navigator mode="modal" headerMode="none">
                 <RootStack.Screen name="Main" component={StackScreen} />

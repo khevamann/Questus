@@ -15,7 +15,7 @@ export default function BlockButton({ style, text, onPress, disabled }: Props) {
   return (
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
-      style={[style, styles.container, disabled ? styles.disabled : null]}
+      style={[styles.container, style, disabled ? styles.disabled : null]}
       onPress={onPress}
       disabled={disabled}
     >

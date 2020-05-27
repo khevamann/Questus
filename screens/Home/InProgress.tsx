@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { RootState } from '../../redux/reducers';
 import { gameTypeSelector } from '../../redux/selectors';
+import { SHADOW } from '../../util/styles';
 import { color, fonts, layout, theme } from '../../util/theme';
 import { GameModes } from '../../util/types';
 
@@ -43,6 +44,7 @@ export default function InProgress({ onQuit, onContinue, topInset }: Props) {
 
 const styles = StyleSheet.create({
   container: {
+    ...SHADOW,
     position: 'absolute',
     zIndex: 10,
     flexDirection: 'row',
@@ -51,15 +53,6 @@ const styles = StyleSheet.create({
     width: layout.screenWidth * 0.8,
     padding: 5,
     borderRadius: 30,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.36,
-    shadowRadius: 6.68,
-
-    elevation: 11,
   },
   text: {
     fontFamily: fonts.quicksand.bold,

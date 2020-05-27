@@ -1,14 +1,13 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
-import Firebase from '../../providers/firebase';
 import { clearGame, setGameType } from '../../redux/actions/game';
-import { setUser } from '../../redux/actions/user';
+import { displayAlert } from '../../redux/actions/status';
 import { RootState } from '../../redux/reducers';
 import {
   gameTypeSelector,
@@ -37,9 +36,9 @@ export default function Home({ navigation }: HomeProps) {
     setInsets(insets);
     if (!user.id) {
       console.log('Updating User');
-      Firebase.newUser().then((newUser: User) => {
-        dispatch(setUser(newUser));
-      });
+      // Firebase.newUser().then((newUser: User) => {
+      //   dispatch(setUser(newUser));
+      // });
       if (user.avatar === '') {
         //FIXME Prompt for user name and photo
       }
@@ -49,10 +48,7 @@ export default function Home({ navigation }: HomeProps) {
 
   const goJoin = () => {
     if (gameType !== 0) {
-      Alert.alert(
-        'Game in Progress',
-        'To join a new game you must quit your current game.'
-      );
+      dispatch(displayAlert('GAME_IN_PROGRESS'));
       return;
     }
     navigation.navigate('JoinGame');
@@ -60,10 +56,7 @@ export default function Home({ navigation }: HomeProps) {
 
   const goCreate = (newGame: number) => {
     if (gameType !== 0) {
-      Alert.alert(
-        'Game in Progress',
-        'To create a new game you must quit your current game.'
-      );
+      dispatch(displayAlert('GAME_IN_PROGRESS'));
       return;
     }
     navigation.navigate('CreateGame');

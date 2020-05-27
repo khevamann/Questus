@@ -16,6 +16,7 @@ export const itemsSelector = (state: RootState) => state.game.items;
 
 export const userSelector = (state: RootState) => state.user;
 
+export const alertSelector = (state: RootState) => state.status.alert;
 export const joinStatus = (state: RootState) => state.status.join.status;
 export const joinError = (state: RootState) => state.status.join.errCode;
 export const gameStatus = (state: RootState) => state.status.game.status;

@@ -1,4 +1,4 @@
-import { ImageStyle, TextStyle } from 'react-native';
+import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 
 import { color, fonts } from './theme';
 
@@ -8,6 +8,17 @@ export const HEADER_TEXT: TextStyle = {
   margin: 15,
   marginTop: 20,
   color: color.light,
+};
+
+export const SHADOW: ViewStyle = {
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
 };
 
 export const bungeeText = (size: number) => {

@@ -15,6 +15,7 @@ import { color } from '../../util/theme';
 type Props = {
   updateCode(code: string): any;
   code: string;
+  editable: boolean;
 };
 
 export default class CodeInput extends Component<Props> {
@@ -23,6 +24,12 @@ export default class CodeInput extends Component<Props> {
   handleClick = () => {
     this.input.current.focus();
   };
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.editable !== prevProps.editable && this.props.editable)
+      this.handleClick();
+  }
+
   handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>) => {
     const { code } = this.props;
     if (e.nativeEvent.key === 'Backspace') {
@@ -36,7 +43,7 @@ export default class CodeInput extends Component<Props> {
     this.props.updateCode(code + newVal);
   };
   render() {
-    const { code } = this.props;
+    const { code, editable } = this.props;
 
     const values = code.split('');
     const selectedIndex = values.length < 4 ? values.length : 3;
@@ -48,6 +55,7 @@ export default class CodeInput extends Component<Props> {
           <View style={styles.wrap}>
             <TextInput
               value=""
+              editable={editable}
               ref={this.input}
               onChangeText={this.handleChange}
               onKeyPress={this.handleKeyPress}

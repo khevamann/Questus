@@ -21,6 +21,7 @@ const LeaderItem = ({
   bColor,
   maxScore,
 }: LeaderProps) => {
+  if (score < 0 || maxScore < 0) return null;
   return (
     <View style={styles.leaderCont}>
       <PlayerAvatar

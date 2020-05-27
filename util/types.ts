@@ -1,3 +1,4 @@
+import { AlertCode } from '../redux/reducers/status';
 import { color } from './theme';
 
 export enum ItemStatus {
@@ -35,11 +36,20 @@ export type PlayerType = {
 export type Status = {
   join: {
     status: LoadingStatus;
-    errCode: string;
+    errCode: AlertCode;
   };
   game: {
     status: GameStatus;
   };
+  alert: AlertConfig;
+};
+
+export type AlertConfig = {
+  title: string;
+  message: string;
+  btnTxt: string;
+  icon: string;
+  onPress?(): void;
 };
 
 export type GameData = {

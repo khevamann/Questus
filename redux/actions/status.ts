@@ -1,5 +1,11 @@
 import { GameStatus, LoadingStatus } from '../../util/types';
-import { SET_GAME_STATUS, SET_JOIN_STATUS } from './actionTypes';
+import { AlertCode } from '../reducers/status';
+import {
+  CLEAR_JOIN_STATUS,
+  SET_GAME_STATUS,
+  SET_JOIN_STATUS,
+  SHOW_ALERT,
+} from './actionTypes';
 
 export const joinSuccess = () => ({
   type: SET_JOIN_STATUS,
@@ -12,11 +18,21 @@ export const joinFailure = (errCode: string) => ({
 });
 
 export const joinClear = () => ({
-  type: SET_JOIN_STATUS,
-  payload: { status: LoadingStatus.LOADING },
+  type: CLEAR_JOIN_STATUS,
+  payload: '',
 });
 
 export const setGameStatus = (status: GameStatus) => ({
   type: SET_GAME_STATUS,
   payload: { status },
+});
+
+export const displayAlert = (errCode: AlertCode) => ({
+  type: SHOW_ALERT,
+  payload: errCode,
+});
+
+export const hideAlert = () => ({
+  type: SHOW_ALERT,
+  payload: '',
 });

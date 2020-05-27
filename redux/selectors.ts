@@ -3,6 +3,7 @@ import { RootState } from './reducers';
 
 export const playersSelector = (state: RootState) => state.game.players;
 export const gameTypeSelector = (state: RootState) => state.game.gameType;
+export const gameOverSelector = (state: RootState) => state.game.gameWinner;
 export const gameConfigSelector = (state: RootState) => {
   const gt = state.game.gameType;
   return gt < 3 || gt > 12 ? GameModes[`item3`] : GameModes[`item${gt}`];
@@ -18,5 +19,4 @@ export const userSelector = (state: RootState) => state.user;
 
 export const alertSelector = (state: RootState) => state.status.alert;
 export const joinStatus = (state: RootState) => state.status.join.status;
-export const joinError = (state: RootState) => state.status.join.errCode;
 export const gameStatus = (state: RootState) => state.status.game.status;

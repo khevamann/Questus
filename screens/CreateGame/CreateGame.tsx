@@ -77,7 +77,7 @@ export default function CreateGame({ navigation }: CreateGameProps) {
   const goGame = () => {
     Firebase.startGame();
   };
-  if (gameStart && gameStart >= Date.now()) {
+  if (gameStart && gameStart >= Date.now() - 10000) {
     return <StartOverlay startTime={startTime} />;
   } else {
     return (

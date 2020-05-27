@@ -5,6 +5,7 @@ import {
   SET_GAME_STATUS,
   SET_JOIN_STATUS,
   SHOW_ALERT,
+  SHOW_CUSTOM_ALERT,
 } from './actionTypes';
 
 export const joinSuccess = () => ({
@@ -12,9 +13,9 @@ export const joinSuccess = () => ({
   payload: { status: LoadingStatus.SUCCESS },
 });
 
-export const joinFailure = (errCode: string) => ({
+export const joinFailure = (alertCode: string) => ({
   type: SET_JOIN_STATUS,
-  payload: { status: LoadingStatus.FAILED, errCode },
+  payload: { status: LoadingStatus.FAILED, alertCode },
 });
 
 export const joinClear = () => ({
@@ -27,9 +28,14 @@ export const setGameStatus = (status: GameStatus) => ({
   payload: { status },
 });
 
-export const displayAlert = (errCode: AlertCode) => ({
+export const displayAlert = (alertCode: AlertCode) => ({
   type: SHOW_ALERT,
-  payload: errCode,
+  payload: alertCode,
+});
+
+export const displayCustomAlert = (alertCode: AlertCode, options: any) => ({
+  type: SHOW_CUSTOM_ALERT,
+  payload: { alertCode, options },
 });
 
 export const hideAlert = () => ({

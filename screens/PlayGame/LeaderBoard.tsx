@@ -8,6 +8,7 @@ import { PlayerType } from '../../util/types';
 type Props = {
   players: PlayerType[];
   maxScore: number;
+  isGameActive: boolean;
 };
 
 type LeaderProps = {
@@ -53,12 +54,16 @@ const LeaderItem = ({
   );
 };
 
-export default function LeaderBoard({ players, maxScore }: Props) {
+export default function LeaderBoard({
+  players,
+  maxScore,
+  isGameActive,
+}: Props) {
   return (
     <View style={styles.container}>
       {players
         .sort((a, b) => (a.score > b.score ? -1 : 1))
-        .slice(0, 4)
+        .slice(0, isGameActive ? 4 : players.length)
         .map((player, index) => (
           <LeaderItem
             key={`player${index}`}

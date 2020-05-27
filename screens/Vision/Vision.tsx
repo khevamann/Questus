@@ -24,10 +24,10 @@ import { Feather } from '@expo/vector-icons';
 import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { setItemComplete } from '../../redux/actions/game';
+import { clearGame, setItemComplete } from '../../redux/actions/game';
 import { RootState } from '../../redux/reducers';
 import { User } from '../../util/types';
-import { userSelector } from '../../redux/selectors';
+import { gameOverSelector, userSelector } from '../../redux/selectors';
 import Firebase from '../../providers/firebase';
 import { shakeAnimation } from '../../util/animations';
 
@@ -40,6 +40,7 @@ type VisionProps = {
 export default function Vision({ navigation, camera, route }: VisionProps) {
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>(userSelector);
+  const gameOver = useSelector<RootState, string>(gameOverSelector);
   const [shake, setShake] = useState(0);
   const [image, setImage] = useState('');
   const [status, setStatus] = useState('');
@@ -47,6 +48,11 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
   const [hasPermission, setHasPermission] = useState(false);
   const { itemIndex, item } = route.params;
   const animatedValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!gameOver) return;
+    exit();
+  }, [gameOver]);
 
   const noMatch = () => {
     shakeAnimation(animatedValue);

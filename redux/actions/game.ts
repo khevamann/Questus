@@ -17,9 +17,15 @@ import {
   SET_ITEM_COMPLETE,
   SETUP_GAME,
 } from './actionTypes';
-import { joinFailure, joinSuccess, setGameStatus } from './status';
+import {
+  displayAlert,
+  displayCustomAlert,
+  joinFailure,
+  joinSuccess,
+  setGameStatus,
+} from './status';
 
-const monitorGame = (dispatch: Dispatch, getState: RootState) => {
+const monitorGame = (dispatch: Dispatch, getState: () => RootState) => {
   return async (docSnap: firebase.firestore.DocumentSnapshot) => {
     /* Check if game has been deleted */
     if (!docSnap.exists) {
@@ -29,17 +35,33 @@ const monitorGame = (dispatch: Dispatch, getState: RootState) => {
     const game = docSnap.data() as GameData;
 
     /* Game Start */
-    if (!getState.game.startTime && game.startTime !== undefined) {
+    if (!getState().game.startTime && game.startTime !== undefined) {
       setTimeout(() => {
         dispatch(setGameStatus(GameStatus.PLAYING));
       }, game.startTime - Date.now());
     }
 
-    /*If this is the first update from the game*/
-    if (!getState.game.gameCode && docSnap.data()?.items !== undefined) {
-      game.items = setGameItems(game.gameType, docSnap.data()?.items);
+    /*Game Over*/
+    if (!getState().game.gameWinner && game.gameWinner !== undefined) {
+      if (game.gameWinner === getState().user.id) {
+        dispatch(displayAlert('GAME_OVER_WIN'));
+      } else {
+        const winner = getState().game.players.find(
+          (player: PlayerType) => player.id === game.gameWinner
+        );
+        const title = winner.name ? `${winner.name} wins!` : 'Game Over';
+        dispatch(displayCustomAlert('GAME_OVER_LOSE', { title }));
+      }
     }
-
+    /*If this is the first update from the game*/
+    if (
+      getState().game.items.length === 0 &&
+      docSnap.data()?.items !== undefined
+    ) {
+      game.items = setGameItems(game.gameType, docSnap.data()?.items);
+    } else {
+      game.items = getState().game.items;
+    }
     dispatch({
       type: SETUP_GAME,
       payload: game,
@@ -47,13 +69,16 @@ const monitorGame = (dispatch: Dispatch, getState: RootState) => {
   };
 };
 
-const monitorPlayers = (dispatch: Dispatch, getState: RootState) => {
+const monitorPlayers = (dispatch: Dispatch, maxScore: number) => {
   return (docSnap: firebase.firestore.QuerySnapshot) => {
     if (docSnap.size === 0) return;
     const players: PlayerType[] = [];
     docSnap.docs.forEach((doc: firebase.firestore.DocumentData) => {
       const player = doc.data() as PlayerType;
-      if (player.score >= getState.game.gameType) Firebase.gameOver(player.id);
+      if (maxScore > 0 && player.score >= maxScore) {
+        player.score = maxScore;
+        Firebase.gameOver(player.id);
+      }
       players.push(player);
     });
 
@@ -78,10 +103,10 @@ export const createGame = (gameType: number) => {
       .doc(getState().user.id)
       .set({ ...getState().user, score: 0 })
       .then();
-    const gameListener = docRef.onSnapshot(monitorGame(dispatch, getState()));
+    const gameListener = docRef.onSnapshot(monitorGame(dispatch, getState));
     const playerListener = docRef
       .collection('players')
-      .onSnapshot(monitorPlayers(dispatch, getState()));
+      .onSnapshot(monitorPlayers(dispatch, getState().game.gameType));
 
     dispatch({
       type: SETUP_GAME,
@@ -126,13 +151,10 @@ export const joinGame = (gameCode: string) => {
       .then();
 
     /* Subscribe to all changes from the game */
-    const gameListener = docRef.ref.onSnapshot(
-      monitorGame(dispatch, getState())
-    );
+    const gameListener = docRef.ref.onSnapshot(monitorGame(dispatch, getState));
     const playerListener = docRef.ref
       .collection('players')
-      .onSnapshot(monitorPlayers(dispatch, getState()));
-    /* Get game items */
+      .onSnapshot(monitorPlayers(dispatch, docRef.data().gameType));
     dispatch({
       type: SETUP_GAME,
       payload: {
@@ -157,7 +179,9 @@ export const clearGame = () => {
     try {
       getState().game.snapshots.gameListener();
       getState().game.snapshots.playerListener();
-    } catch (e) {}
+    } catch (e) {
+      console.log('Error Removing listeners', e);
+    }
 
     /* Remove self from the game */
     getFirestore()
@@ -167,13 +191,6 @@ export const clearGame = () => {
       .doc(getState().user.id)
       .delete();
 
-    /* If host delete the game */
-    if (getState().game.host === getState().user.id) {
-      getFirestore()
-        .collection('activeGames')
-        .doc(getState().game.gameId)
-        .delete();
-    }
     dispatch({
       type: CLEAR_GAME,
       payload: 0,

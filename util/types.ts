@@ -55,6 +55,7 @@ export type AlertConfig = {
 export type GameData = {
   gameId?: string;
   startTime?: number;
+  gameWinner?: string;
   snapshots?: {
     gameListener?(): void;
     playerListener?(): void;

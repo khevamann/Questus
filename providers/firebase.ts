@@ -28,7 +28,7 @@ const incrementScore = () => {
 const gameOver = (playerId: string) => {
   currGame(gameId).update({
     gameWinner: playerId,
-    gameEnded: firebase.firestore.FieldValue.serverTimestamp(),
+    endTime: firebase.firestore.FieldValue.serverTimestamp(),
   });
 };
 

@@ -11,6 +11,7 @@ import {
 
 const initialState: GameData = {
   gameId: '',
+  gameWinner: '',
   startTime: null,
   host: '',
   players: [],

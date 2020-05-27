@@ -5,6 +5,7 @@ import {
   SHOW_ALERT,
   HIDE_ALERT,
   CLEAR_JOIN_STATUS,
+  SHOW_CUSTOM_ALERT,
 } from '../actions/actionTypes';
 
 const initialState: Status = {
@@ -19,7 +20,7 @@ const statusReducer = (state = initialState, action: any) => {
       return {
         ...state,
         join: action.payload,
-        alert: alerts[action.payload.errCode],
+        alert: alerts[action.payload.alertCode],
       };
     case CLEAR_JOIN_STATUS:
       return {
@@ -30,6 +31,14 @@ const statusReducer = (state = initialState, action: any) => {
       return { ...state, game: action.payload };
     case SHOW_ALERT:
       return { ...state, alert: alerts[action.payload] };
+    case SHOW_CUSTOM_ALERT:
+      return {
+        ...state,
+        alert: {
+          ...alerts[action.payload.alertCode],
+          ...action.payload.options,
+        },
+      };
     case HIDE_ALERT:
       return { ...state, alert: null };
     default:
@@ -41,7 +50,9 @@ export type AlertCode =
   | 'GAME_DNE'
   | 'GAME_FULL'
   | 'GAME_DELETED'
-  | 'GAME_IN_PROGRESS';
+  | 'GAME_IN_PROGRESS'
+  | 'GAME_OVER_WIN'
+  | 'GAME_OVER_LOSE';
 
 export const alerts = {
   GAME_DNE: {
@@ -62,6 +73,18 @@ export const alerts = {
     icon: 'trash-2',
     title: 'Game in Progress!',
     message: 'To join a new game you must quit your current game.',
+  },
+  GAME_OVER_WIN: {
+    icon: 'globe',
+    title: '1st Place! Congrats!',
+    message:
+      'You know no one had a chance of beating you. See if you can keep up your winning streak',
+  },
+  GAME_OVER_LOSE: {
+    icon: 'meh',
+    title: '',
+    message:
+      'That means you lose... Maybe next time try to actually look for the items on your list.',
   },
 };
 

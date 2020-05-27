@@ -8,6 +8,7 @@ import { StackParams } from '../../App';
 import GameHeader from '../../components/GameHeader';
 import { RootState } from '../../redux/reducers';
 import {
+  gameOverSelector,
   gameTypeSelector,
   itemsSelector,
   playersSelector,
@@ -24,6 +25,7 @@ type PlayGameProps = {
 export default function PlayGame({ navigation }: PlayGameProps) {
   const gameType = useSelector<RootState, number>(gameTypeSelector);
   const players = useSelector<RootState, PlayerType[]>(playersSelector);
+  const gameOver = useSelector<RootState, string>(gameOverSelector);
   const items = useSelector<RootState, GameItem[][]>(itemsSelector);
 
   useEffect(() => {
@@ -45,16 +47,24 @@ export default function PlayGame({ navigation }: PlayGameProps) {
     <View style={styles.container}>
       <GameHeader onBack={goBack} />
       <Text style={HEADER_TEXT}>LEADERBOARD</Text>
-      <LeaderBoard players={players} maxScore={gameType} />
-      <Text style={HEADER_TEXT}>YOUR LIST</Text>
-      {items.map((value, index) => (
-        <ItemSet
-          key={index}
-          setIndex={index}
-          items={value}
-          onPress={openCamera}
-        />
-      ))}
+      <LeaderBoard
+        players={players}
+        isGameActive={!gameOver}
+        maxScore={gameType}
+      />
+      {!gameOver && (
+        <>
+          <Text style={HEADER_TEXT}>YOUR LIST</Text>
+          {items.map((value, index) => (
+            <ItemSet
+              key={index}
+              setIndex={index}
+              items={value}
+              onPress={openCamera}
+            />
+          ))}
+        </>
+      )}
     </View>
   );
 }

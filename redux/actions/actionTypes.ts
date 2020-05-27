@@ -9,6 +9,7 @@ export const CLEAR_GAME = 'CLEAR_GAME';
 export const SET_USER = 'SET_USER';
 
 export const SHOW_ALERT = 'SHOW_ALERT';
+export const SHOW_CUSTOM_ALERT = 'SHOW_CUSTOM_ALERT';
 export const HIDE_ALERT = 'HIDE_ALERT';
 export const SET_JOIN_STATUS = 'SET_JOIN_STATUS';
 export const CLEAR_JOIN_STATUS = 'CLEAR_JOIN_STATUS';

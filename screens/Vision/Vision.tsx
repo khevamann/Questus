@@ -1,10 +1,12 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Camera, CameraProps } from 'expo-camera';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Animated,
+  Easing,
   Image,
   Platform,
   SafeAreaView,
@@ -27,6 +29,7 @@ import { RootState } from '../../redux/reducers';
 import { User } from '../../util/types';
 import { userSelector } from '../../redux/selectors';
 import Firebase from '../../providers/firebase';
+import { shakeAnimation } from '../../util/animations';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -37,13 +40,22 @@ type VisionProps = {
 export default function Vision({ navigation, camera, route }: VisionProps) {
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>(userSelector);
+  const [shake, setShake] = useState(0);
   const [image, setImage] = useState('');
   const [status, setStatus] = useState('');
   const [flash, setFlash] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState(false);
   const { itemIndex, item } = route.params;
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  const noMatch = () => {
+    shakeAnimation(animatedValue);
+    setStatus('');
+  };
 
   const takePictureAsync = async () => {
+    Firebase.incrementScore();
+    return;
     setStatus('searching');
     if (!camera) return;
     const { uri, base64 } = await camera.takePictureAsync({
@@ -52,15 +64,15 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
     if (base64) {
       setImage(uri);
       try {
-        const result = await callGoogleVisionAsync(base64);
-        if (isItemMatch(result, item)) {
-          setStatus('found');
-          console.log(result);
-          Alert.alert('Results', result);
-          Firebase.incrementScore();
-          dispatch(setItemComplete(itemIndex));
-          exit();
-        }
+        const results = await callGoogleVisionAsync(base64);
+        if (!results) return noMatch();
+        console.log(results);
+        if (!isItemMatch(results, item)) return noMatch();
+
+        setStatus('found');
+        Firebase.incrementScore();
+        dispatch(setItemComplete(itemIndex));
+        exit();
       } catch (error) {
         console.log(error);
       }
@@ -108,9 +120,21 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
               paddingBottom: safeAreaInsets.bottom,
             }}
           >
-            <View style={styles.itemCont}>
+            <Animated.View
+              style={{
+                ...styles.itemCont,
+                transform: [
+                  {
+                    rotate: animatedValue.interpolate({
+                      inputRange: [-1, 1],
+                      outputRange: ['-3deg', '3deg'],
+                    }),
+                  },
+                ],
+              }}
+            >
               <Text style={styles.itemText}>{item.name}</Text>
-            </View>
+            </Animated.View>
             <FocusGrid style={styles.focusGrid}></FocusGrid>
             <View style={styles.options}>
               <CircleButton

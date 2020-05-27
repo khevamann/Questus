@@ -1,12 +1,13 @@
 import { Feather } from '@expo/vector-icons';
 import * as React from 'react';
-import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { hideAlert } from '../redux/actions/status';
 import { RootState } from '../redux/reducers';
 import { alertSelector } from '../redux/selectors';
+import { alertCloseAnimation, alertOpenAnimation } from '../util/animations';
 import { SHADOW } from '../util/styles';
 import { color, fonts, layout } from '../util/theme';
 import { AlertConfig } from '../util/types';
@@ -15,17 +16,39 @@ import BlockButton from './BlockButton';
 export default function Alert() {
   const dispatch = useDispatch();
   const alert = useSelector<RootState, AlertConfig>(alertSelector);
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
   const closeAlert = () => {
-    dispatch(hideAlert());
-    if (alert.onPress) alert.onPress();
+    alertCloseAnimation(animatedValue).start(() => {
+      if (alert.onPress) alert.onPress();
+      dispatch(hideAlert());
+    });
   };
 
-  useEffect(() => {}, [alert]);
+  useEffect(() => {
+    if (alert) alertOpenAnimation(animatedValue);
+  }, [alert]);
 
   if (!alert) return null;
   return (
     <View style={styles.backdrop}>
-      <View style={styles.container}>
+      <Animated.View
+        style={{
+          ...styles.container,
+          opacity: animatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+          }),
+          transform: [
+            {
+              scale: animatedValue.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [0.5, 1.2, 1],
+              }),
+            },
+          ],
+        }}
+      >
         <Feather
           style={styles.alertIcon}
           name={alert.icon || 'alert-octagon'}
@@ -39,7 +62,7 @@ export default function Alert() {
           text={alert.btnTxt || 'DISMISS'}
           onPress={closeAlert}
         />
-      </View>
+      </Animated.View>
     </View>
   );
 }

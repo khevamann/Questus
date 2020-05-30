@@ -1,4 +1,4 @@
-import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
+import { TextStyle, ViewStyle } from 'react-native';
 
 import { color, fonts } from './theme';
 
@@ -38,10 +38,4 @@ export const MSG_TEXT: TextStyle = {
   fontSize: 16,
   marginHorizontal: 80,
   marginVertical: 40,
-};
-
-export const AVATAR_LARGE: ImageStyle = {
-  width: 120,
-  height: 120,
-  borderRadius: 60,
 };

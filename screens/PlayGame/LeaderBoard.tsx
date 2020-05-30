@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import PlayerAvatar from '../../components/PlayerAvatar';
 import { color, fonts, layout } from '../../util/theme';
 import { PlayerType } from '../../util/types';
 
@@ -18,23 +17,19 @@ type LeaderProps = {
 };
 
 const LeaderItem = ({
-  player: { avatar, name, score },
+  player: { name, score },
   bColor,
   maxScore,
 }: LeaderProps) => {
   if (score < 0 || maxScore < 0) return null;
   return (
     <View style={styles.leaderCont}>
-      <PlayerAvatar
-        style={{ ...styles.leaderImg, borderColor: color.items[bColor] }}
-        src={avatar}
-      />
       <View style={styles.leaderProgCont}>
         <View
           style={[
             styles.leaderProg,
             {
-              width: (score / maxScore) * (layout.screenWidth - 160) + 40,
+              width: (score / maxScore) * (layout.screenWidth - 120) + 40,
               backgroundColor: color.items[bColor],
             },
           ]}
@@ -86,16 +81,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 2,
   },
-  leaderImg: {
-    flex: 0,
-    marginRight: 10,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-  },
   leaderProgCont: {
-    width: layout.screenWidth - 120,
+    width: layout.screenWidth - 80,
     flexDirection: 'row',
     height: 40,
     alignItems: 'center',

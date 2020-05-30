@@ -28,7 +28,6 @@ export type GameConfig = {
 export type PlayerType = {
   id?: string;
   name: string;
-  avatar: string;
   score?: number;
   isHost?: boolean;
 };
@@ -48,8 +47,10 @@ export type AlertConfig = {
   title: string;
   message: string;
   btnTxt: string;
-  icon: string;
-  onPress?(): void;
+  icon?: string;
+  input?: string;
+  faicon?: string;
+  onPress?(...args: any[]): void;
 };
 
 export type GameData = {
@@ -70,7 +71,6 @@ export type GameData = {
 export type User = {
   id: string;
   name: string;
-  avatar: string;
 };
 
 export type GameItem = {

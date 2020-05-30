@@ -60,8 +60,6 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
   };
 
   const takePictureAsync = async () => {
-    Firebase.incrementScore();
-    return;
     setStatus('searching');
     if (!camera) return;
     const { uri, base64 } = await camera.takePictureAsync({

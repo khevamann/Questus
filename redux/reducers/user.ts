@@ -4,7 +4,6 @@ import { SET_USER } from '../actions/actionTypes';
 const initialState: User = {
   id: '',
   name: 'Player',
-  avatar: '',
 };
 
 const userReducer = (state = initialState, action: any) => {

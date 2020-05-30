@@ -112,7 +112,7 @@ export const createGame = (gameType: number) => {
       type: SETUP_GAME,
       payload: {
         gameId: docRef.id,
-        snapshots: [gameListener, playerListener],
+        snapshots: { gameListener, playerListener },
       },
     });
   };
@@ -161,7 +161,7 @@ export const joinGame = (gameCode: string) => {
         gameType: docRef.data().gameType,
         gameCode,
         gameId: docRef.id,
-        snapshots: [gameListener, playerListener],
+        snapshots: { gameListener, playerListener },
         startTime: docRef.data().startTime,
       },
     });

@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
@@ -83,23 +83,20 @@ export default function CreateGame({ navigation }: CreateGameProps) {
     return (
       <View style={styles.container}>
         <GameHeader onBack={goBack} />
-        <Text style={HEADER_TEXT}>PLAYERS (2-8)</Text>
-        <View style={styles.outerPlayers}>
-          <View style={styles.players}>
-            {players.map((player: PlayerType) => (
-              <Player
-                key={player.id}
-                name={player.name}
-                avatar={player.avatar}
-              />
-            ))}
-          </View>
-        </View>
+        <Text style={HEADER_TEXT}>PLAYERS 2+</Text>
+        <ScrollView
+          contentContainerStyle={styles.players}
+          style={styles.playersOuter}
+        >
+          {players.map((player: PlayerType, index: number) => (
+            <Player key={player.id} name={player.name} index={index} />
+          ))}
+        </ScrollView>
         <BlockButton
           style={{ marginBottom: safeAreaInsets.bottom || 20 }}
           /*{FIXME SHOULD BE 2 not 0}*/
-          text={players.length > 0 && isHost ? 'START GAME' : 'WAITING . . .'}
-          disabled={!isHost || players.length < 0}
+          text={players.length >= 2 && isHost ? 'START GAME' : 'WAITING . . .'}
+          disabled={!isHost || players.length < 2}
           onPress={goGame}
         />
       </View>
@@ -111,12 +108,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  outerPlayers: {
+  playersOuter: {
     flex: 1,
-    justifyContent: 'center',
+    margin: 5,
   },
   players: {
-    marginHorizontal: 30,
+    justifyContent: 'center',
     flexWrap: 'wrap',
     flexDirection: 'row',
   },

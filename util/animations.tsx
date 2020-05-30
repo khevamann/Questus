@@ -18,6 +18,15 @@ export const alertCloseAnimation = (animatedValue: Animated.AnimatedValue) => {
   });
 };
 
+export const addPlayer = (animatedValue: Animated.AnimatedValue) => {
+  return Animated.timing(animatedValue, {
+    toValue: 1,
+    duration: 300,
+    easing: Easing.linear,
+    useNativeDriver: true,
+  }).start();
+};
+
 export const shakeAnimation = (animatedValue: Animated.AnimatedValue) => {
   Animated.loop(
     Animated.sequence([

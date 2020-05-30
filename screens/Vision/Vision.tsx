@@ -61,7 +61,6 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
   };
 
   const takePictureAsync = async () => {
-    dispatch(setItemComplete(itemIndex));
     setStatus('searching');
     if (!camera) return;
     const { uri, base64 } = await camera.takePictureAsync({

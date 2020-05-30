@@ -1,4 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
+import Constants from 'expo-constants';
 import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -7,7 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import { clearGame, setGameType } from '../../redux/actions/game';
-import { displayAlert } from '../../redux/actions/status';
+import { displayAlert, userPopup } from '../../redux/actions/status';
+import { setUser } from '../../redux/actions/user';
 import { RootState } from '../../redux/reducers';
 import {
   gameTypeSelector,
@@ -34,17 +36,19 @@ export default function Home({ navigation }: HomeProps) {
 
   React.useEffect(() => {
     setInsets(insets);
-    if (!user.id) {
-      console.log('Updating User');
-      // Firebase.newUser().then((newUser: User) => {
-      //   dispatch(setUser(newUser));
-      // });
-      if (user.avatar === '') {
-        //FIXME Prompt for user name and photo
-      }
+    if (!user.name) {
+      dispatch(userPopup(setUserName));
     }
-    //store.default().persistor.purge();
   }, []);
+
+  const setUserName = (name: string) => {
+    dispatch(
+      setUser({
+        name,
+        id: Constants.deviceId,
+      })
+    );
+  };
 
   const goJoin = () => {
     if (gameType !== 0) {

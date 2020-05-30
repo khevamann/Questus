@@ -6,6 +6,7 @@ import {
   SET_JOIN_STATUS,
   SHOW_ALERT,
   SHOW_CUSTOM_ALERT,
+  USER_POPUP,
 } from './actionTypes';
 
 export const joinSuccess = () => ({
@@ -36,6 +37,11 @@ export const displayAlert = (alertCode: AlertCode) => ({
 export const displayCustomAlert = (alertCode: AlertCode, options: any) => ({
   type: SHOW_CUSTOM_ALERT,
   payload: { alertCode, options },
+});
+
+export const userPopup = (callback: (name: string) => void) => ({
+  type: USER_POPUP,
+  payload: callback,
 });
 
 export const hideAlert = () => ({

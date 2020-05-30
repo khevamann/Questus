@@ -1,7 +1,7 @@
-import { Feather } from '@expo/vector-icons';
+import { FontAwesome5, Feather } from '@expo/vector-icons';
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { hideAlert } from '../redux/actions/status';
@@ -17,10 +17,11 @@ export default function Alert() {
   const dispatch = useDispatch();
   const alert = useSelector<RootState, AlertConfig>(alertSelector);
   const animatedValue = useRef(new Animated.Value(0)).current;
+  const [inputVal, setInputVal] = useState<string>('');
 
   const closeAlert = () => {
     alertCloseAnimation(animatedValue).start(() => {
-      if (alert.onPress) alert.onPress();
+      if (alert.onPress) alert.onPress(inputVal);
       dispatch(hideAlert());
     });
   };
@@ -28,6 +29,10 @@ export default function Alert() {
   useEffect(() => {
     if (alert) alertOpenAnimation(animatedValue);
   }, [alert]);
+
+  const updateInput = (value: string) => {
+    setInputVal(value);
+  };
 
   if (!alert) return null;
   return (
@@ -49,14 +54,35 @@ export default function Alert() {
           ],
         }}
       >
-        <Feather
-          style={styles.alertIcon}
-          name={alert.icon || 'alert-octagon'}
-          size={40}
-          color={color.bleach}
-        />
-        <Text style={styles.alertTitle}>{alert.title || ''}</Text>
-        <Text style={styles.alertMsg}>{alert.message || ''}</Text>
+        {alert.faicon ? (
+          <FontAwesome5
+            style={styles.alertIcon}
+            name={alert.faicon}
+            size={40}
+            color={color.bleach}
+          />
+        ) : (
+          <Feather
+            style={styles.alertIcon}
+            name={alert.icon || 'alert-octagon'}
+            size={40}
+            color={color.bleach}
+          />
+        )}
+        {alert.title && (
+          <Text style={styles.alertTitle}>{alert.title || ''}</Text>
+        )}
+        {alert.message && (
+          <Text style={styles.alertMsg}>{alert.message || ''}</Text>
+        )}
+        {alert.input && (
+          <TextInput
+            style={styles.input}
+            onChangeText={updateInput}
+            maxLength={15}
+            placeholder={alert.input}
+          />
+        )}
         <BlockButton
           style={styles.mainBtn}
           text={alert.btnTxt || 'DISMISS'}
@@ -98,6 +124,16 @@ const styles = StyleSheet.create({
     color: color.dark,
   },
   alertMsg: {
+    fontFamily: fonts.quicksand.medium,
+    margin: 10,
+    color: color.medium,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 2,
+    width: '80%',
+    borderRadius: 10,
+    height: 50,
     fontFamily: fonts.quicksand.medium,
     margin: 10,
     color: color.medium,

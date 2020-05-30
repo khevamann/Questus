@@ -6,6 +6,7 @@ import {
   HIDE_ALERT,
   CLEAR_JOIN_STATUS,
   SHOW_CUSTOM_ALERT,
+  USER_POPUP,
 } from '../actions/actionTypes';
 
 const initialState: Status = {
@@ -31,6 +32,11 @@ const statusReducer = (state = initialState, action: any) => {
       return { ...state, game: action.payload };
     case SHOW_ALERT:
       return { ...state, alert: alerts[action.payload] };
+    case USER_POPUP:
+      return {
+        ...state,
+        alert: { ...alerts['USER_INPUT'], onPress: action.payload },
+      };
     case SHOW_CUSTOM_ALERT:
       return {
         ...state,
@@ -75,16 +81,22 @@ export const alerts = {
     message: 'To join a new game you must quit your current game.',
   },
   GAME_OVER_WIN: {
-    icon: 'globe',
+    faicon: 'crown',
     title: '1st Place! Congrats!',
     message:
       'You know no one had a chance of beating you. See if you can keep up your winning streak',
   },
   GAME_OVER_LOSE: {
-    icon: 'meh',
+    faicon: 'sad-tear',
     title: '',
     message:
       'That means you lose... Maybe next time try to actually look for the items on your list.',
+  },
+  USER_INPUT: {
+    faicon: 'signature',
+    title: 'What should we call you?',
+    btnTxt: 'Continue',
+    input: 'Nickname',
   },
 };
 

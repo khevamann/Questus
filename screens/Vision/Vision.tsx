@@ -20,7 +20,7 @@ import {
 import { StackParams } from '../../App';
 import { callGoogleVisionAsync, isItemMatch } from '../../providers/visionApi';
 import { color, fonts, layout, safeAreaInsets, theme } from '../../util/theme';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,6 +30,7 @@ import { User } from '../../util/types';
 import { gameOverSelector, userSelector } from '../../redux/selectors';
 import Firebase from '../../providers/firebase';
 import { shakeAnimation } from '../../util/animations';
+import { FA_ICON } from '../../util/styles';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -60,6 +61,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
   };
 
   const takePictureAsync = async () => {
+    dispatch(setItemComplete(itemIndex));
     setStatus('searching');
     if (!camera) return;
     const { uri, base64 } = await camera.takePictureAsync({
@@ -147,9 +149,9 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
                 style={{ backgroundColor: color.semi }}
               >
                 {flash ? (
-                  <Feather name="zap" size={33} color={color.white} />
+                  <Feather name="zap" size={34} color={color.white} />
                 ) : (
-                  <Feather name="zap-off" size={33} color={color.white} />
+                  <Feather name="zap-off" size={34} color={color.white} />
                 )}
               </CircleButton>
               <CircleButton onPress={takePictureAsync}>
@@ -157,7 +159,12 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
                   {status === 'searching' ? (
                     <ActivityIndicator size="large" color={color.white} />
                   ) : (
-                    <Feather name="camera" size={32} color={color.white} />
+                    <FontAwesome5
+                      style={FA_ICON}
+                      name="camera"
+                      size={35}
+                      color={color.white}
+                    />
                   )}
                 </>
               </CircleButton>
@@ -166,12 +173,14 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
                 onPress={exit}
                 style={{ backgroundColor: color.semi }}
               >
-                <Feather name="x" size={35} color={color.white} />
+                <FontAwesome5
+                  style={FA_ICON}
+                  name="times"
+                  size={35}
+                  color={color.white}
+                />
               </CircleButton>
             </View>
-            {/*{image !== '' && (*/}
-            {/*  <Image style={styles.image} source={{ uri: image }} />*/}
-            {/*)}*/}
           </View>
         </Camera>
       </View>

@@ -120,7 +120,7 @@ export default function CreateGame({ navigation }: CreateGameProps) {
         <BlockButton
           style={{ marginBottom: safeAreaInsets.bottom || 20 }}
           text={players.length >= 2 && isHost ? 'START GAME' : 'WAITING . . .'}
-          disabled={!isHost || players.length < 2}
+          disabled={!isHost || players.length < 0}
           onPress={goGame}
         />
       </View>

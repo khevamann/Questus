@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SplashScreen } from 'expo';
@@ -62,6 +62,7 @@ function App() {
         // Load fonts
         await Font.loadAsync({
           ...Feather.font,
+          ...FontAwesome5.font,
           Bungee: require('./assets/fonts/Bungee.ttf'),
           QuicksandReg: require('./assets/fonts/Quicksand-Regular.ttf'),
           QuicksandMed: require('./assets/fonts/Quicksand-Medium.ttf'),

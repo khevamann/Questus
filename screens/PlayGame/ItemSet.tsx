@@ -1,7 +1,8 @@
-import { Feather } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { FA_ICON } from '../../util/styles';
 import { color, fonts, layout, theme } from '../../util/theme';
 import { GameItem, ItemStatus } from '../../util/types';
 
@@ -43,9 +44,19 @@ function ItemOff({ complete, setColor }: OffProps) {
       ]}
     >
       {complete === ItemStatus.COMPLETE ? (
-        <Feather name="check" size={35} color={color.success} />
+        <FontAwesome5
+          style={FA_ICON}
+          name="check"
+          size={33}
+          color={color.success}
+        />
       ) : (
-        <Feather name="lock" size={35} color={color.white} />
+        <FontAwesome5
+          style={FA_ICON}
+          name="lock"
+          size={33}
+          color={color.white}
+        />
       )}
     </View>
   );

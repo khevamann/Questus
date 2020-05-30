@@ -50,7 +50,6 @@ export type AlertConfig = {
   btnCancel?: string;
   icon?: string;
   input?: string;
-  faicon?: string;
   onPress?(...args: any[]): void;
 };
 

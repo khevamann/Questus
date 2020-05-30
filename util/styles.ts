@@ -39,3 +39,7 @@ export const MSG_TEXT: TextStyle = {
   marginHorizontal: 80,
   marginVertical: 40,
 };
+
+export const FA_ICON: TextStyle = {
+  marginTop: 4,
+};

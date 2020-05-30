@@ -66,18 +66,13 @@ export const alerts = {
     title: 'Invalid Game Code!',
     message: "If you don't have a code go back and start a new game.",
   },
-  GAME_FULL: {
-    icon: 'lock',
-    title: 'Full Game!',
-    message: 'The game you are trying to join already has 8 players.',
-  },
   GAME_DELETED: {
-    icon: 'trash-2',
+    icon: 'trash',
     title: 'Game Deleted!',
     message: 'This game has been deleted by the host.',
   },
   GAME_IN_PROGRESS: {
-    faicon: 'bomb',
+    icon: 'bomb',
     title: 'Game in Progress!',
     btnTxt: 'Leave',
     btnCancel: 'Cancel',
@@ -85,19 +80,19 @@ export const alerts = {
       'Are you sure you want to exit. You will be removed from this game.',
   },
   GAME_OVER_WIN: {
-    faicon: 'crown',
+    icon: 'crown',
     title: '1st Place! Congrats!',
     message:
       'You know no one had a chance of beating you. See if you can keep up your winning streak',
   },
   GAME_OVER_LOSE: {
-    faicon: 'sad-tear',
+    icon: 'sad-tear',
     title: '',
     message:
       'That means you lose... Maybe next time try to actually look for the items on your list.',
   },
   USER_INPUT: {
-    faicon: 'signature',
+    icon: 'signature',
     title: 'What should we call you?',
     btnTxt: 'Set Name',
     input: 'Nickname',

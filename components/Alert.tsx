@@ -1,4 +1,4 @@
-import { FontAwesome5, Feather } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -67,21 +67,12 @@ export default function Alert() {
           ],
         }}
       >
-        {alert.faicon ? (
-          <FontAwesome5
-            style={styles.alertIcon}
-            name={alert.faicon}
-            size={40}
-            color={color.bleach}
-          />
-        ) : (
-          <Feather
-            style={styles.alertIcon}
-            name={alert.icon || 'alert-octagon'}
-            size={40}
-            color={color.bleach}
-          />
-        )}
+        <FontAwesome5
+          style={styles.alertIcon}
+          name={alert.icon || 'exclamation-triangle'}
+          size={40}
+          color={color.bleach}
+        />
         {alert.title && (
           <Text style={styles.alertTitle}>{alert.title || ''}</Text>
         )}

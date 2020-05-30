@@ -134,9 +134,6 @@ export const joinGame = (gameCode: string) => {
       return dispatch(joinFailure('GAME_DNE'));
     }
     const docRef = querySnapshot.docs[0];
-    if (docRef.data().playerCount >= 8) {
-      return dispatch(joinFailure('GAME_FULL'));
-    }
 
     /* If game exists add user as a player */
     docRef.ref

@@ -7,21 +7,16 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
-import { clearGame, setGameType } from '../../redux/actions/game';
+import { setGameType } from '../../redux/actions/game';
 import { displayAlert, userPopup } from '../../redux/actions/status';
 import { setUser } from '../../redux/actions/user';
 import { RootState } from '../../redux/reducers';
-import {
-  gameTypeSelector,
-  startSelector,
-  userSelector,
-} from '../../redux/selectors';
+import { gameTypeSelector, userSelector } from '../../redux/selectors';
 import { MSG_TEXT } from '../../util/styles';
 import { setInsets } from '../../util/theme';
 import { User } from '../../util/types';
 import CreateGameGrid from './CreateGameGrid';
 import HomeTitle from './HomeTitle';
-import InProgress from './InProgress';
 
 type HomeProps = {
   navigation: StackNavigationProp<StackParams, 'Home'>;
@@ -31,7 +26,6 @@ export default function Home({ navigation }: HomeProps) {
   const insets = useSafeArea();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>(userSelector);
-  const startTime = useSelector<RootState, number>(startSelector);
   const gameType = useSelector<RootState, number>(gameTypeSelector);
 
   React.useEffect(() => {
@@ -67,24 +61,8 @@ export default function Home({ navigation }: HomeProps) {
     dispatch(setGameType(newGame));
   };
 
-  const quitGame = () => {
-    dispatch(clearGame());
-  };
-  const continueGame = () => {
-    const inProgress = startTime && startTime <= 0;
-    navigation.navigate(inProgress ? 'PlayGame' : 'CreateGame');
-  };
-
   return (
     <View style={{ ...styles.container, paddingTop: insets.top }}>
-      {gameType !== 0 && (
-        //FIXME: REMOVE
-        <InProgress
-          onQuit={quitGame}
-          onContinue={continueGame}
-          topInset={insets.top}
-        />
-      )}
       <HomeTitle />
       <BlockButton style={styles.joinBtn} text="Join Game" onPress={goJoin} />
       <Text style={styles.startText}>

@@ -47,6 +47,7 @@ export type AlertConfig = {
   title: string;
   message: string;
   btnTxt: string;
+  btnCancel?: string;
   icon?: string;
   input?: string;
   faicon?: string;

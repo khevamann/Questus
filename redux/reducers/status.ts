@@ -58,7 +58,8 @@ export type AlertCode =
   | 'GAME_DELETED'
   | 'GAME_IN_PROGRESS'
   | 'GAME_OVER_WIN'
-  | 'GAME_OVER_LOSE';
+  | 'GAME_OVER_LOSE'
+  | 'USER_INPUT';
 
 export const alerts = {
   GAME_DNE: {
@@ -76,9 +77,12 @@ export const alerts = {
     message: 'This game has been deleted by the host.',
   },
   GAME_IN_PROGRESS: {
-    icon: 'trash-2',
+    faicon: 'bomb',
     title: 'Game in Progress!',
-    message: 'To join a new game you must quit your current game.',
+    btnTxt: 'Leave',
+    btnCancel: 'Cancel',
+    message:
+      'Are you sure you want to exit. You will be removed from this game.',
   },
   GAME_OVER_WIN: {
     faicon: 'crown',
@@ -95,7 +99,7 @@ export const alerts = {
   USER_INPUT: {
     faicon: 'signature',
     title: 'What should we call you?',
-    btnTxt: 'Continue',
+    btnTxt: 'Set Name',
     input: 'Nickname',
   },
 };

@@ -1,11 +1,14 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
 import GameHeader from '../../components/GameHeader';
+import { clearGame } from '../../redux/actions/game';
+import { displayCustomAlert } from '../../redux/actions/status';
 import { RootState } from '../../redux/reducers';
 import {
   gameOverSelector,
@@ -23,6 +26,7 @@ type PlayGameProps = {
 };
 
 export default function PlayGame({ navigation }: PlayGameProps) {
+  const dispatch = useDispatch();
   const gameType = useSelector<RootState, number>(gameTypeSelector);
   const players = useSelector<RootState, PlayerType[]>(playersSelector);
   const gameOver = useSelector<RootState, string>(gameOverSelector);
@@ -33,8 +37,23 @@ export default function PlayGame({ navigation }: PlayGameProps) {
   }, []);
 
   const goBack = () => {
-    navigation.goBack();
+    dispatch(
+      displayCustomAlert('GAME_IN_PROGRESS', {
+        onPress: () => {
+          dispatch(clearGame());
+          navigation.goBack();
+        },
+      })
+    );
+    return true;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', goBack);
+      return () => BackHandler.removeEventListener('hardwareBackPress', goBack);
+    }, [])
+  );
 
   const openCamera = (index: number, setIndex: number) => {
     navigation.navigate('Vision', {

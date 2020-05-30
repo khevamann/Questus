@@ -25,6 +25,12 @@ const incrementScore = () => {
     });
 };
 
+const changeName = (name: string) => {
+  currGame(gameId).collection('players').doc(userId).update({
+    name,
+  });
+};
+
 const gameOver = (playerId: string) => {
   currGame(gameId).update({
     gameWinner: playerId,
@@ -37,6 +43,7 @@ const currGame = (gId: string): firebase.firestore.DocumentReference => {
 };
 
 const Firebase = {
+  changeName,
   setGameId,
   startGame,
   incrementScore,

@@ -1,7 +1,8 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
@@ -9,7 +10,11 @@ import BlockButton from '../../components/BlockButton';
 import GameHeader from '../../components/GameHeader';
 import Firebase from '../../providers/firebase';
 import { clearGame, createGame } from '../../redux/actions/game';
-import { displayAlert, setGameStatus } from '../../redux/actions/status';
+import {
+  displayAlert,
+  displayCustomAlert,
+  setGameStatus,
+} from '../../redux/actions/status';
 import { RootState } from '../../redux/reducers';
 import {
   codeSelector,
@@ -71,8 +76,23 @@ export default function CreateGame({ navigation }: CreateGameProps) {
     }, 1000);
   }, [gameStart]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', goBack);
+      return () => BackHandler.removeEventListener('hardwareBackPress', goBack);
+    }, [])
+  );
+
   const goBack = () => {
-    navigation.goBack();
+    dispatch(
+      displayCustomAlert('GAME_IN_PROGRESS', {
+        onPress: () => {
+          dispatch(clearGame());
+          navigation.goBack();
+        },
+      })
+    );
+    return true;
   };
   const goGame = () => {
     Firebase.startGame();
@@ -89,12 +109,16 @@ export default function CreateGame({ navigation }: CreateGameProps) {
           style={styles.playersOuter}
         >
           {players.map((player: PlayerType, index: number) => (
-            <Player key={player.id} name={player.name} index={index} />
+            <Player
+              key={player.id}
+              name={player.name}
+              id={player.id}
+              index={index}
+            />
           ))}
         </ScrollView>
         <BlockButton
           style={{ marginBottom: safeAreaInsets.bottom || 20 }}
-          /*{FIXME SHOULD BE 2 not 0}*/
           text={players.length >= 2 && isHost ? 'START GAME' : 'WAITING . . .'}
           disabled={!isHost || players.length < 2}
           onPress={goGame}

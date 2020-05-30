@@ -78,6 +78,7 @@ export default function Home({ navigation }: HomeProps) {
   return (
     <View style={{ ...styles.container, paddingTop: insets.top }}>
       {gameType !== 0 && (
+        //FIXME: REMOVE
         <InProgress
           onQuit={quitGame}
           onContinue={continueGame}

@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: layout.screenWidth,
-    height: layout.screenHeight,
+    height: layout.fullHeight,
   },
   startTime: {
     ...bungeeText(120),

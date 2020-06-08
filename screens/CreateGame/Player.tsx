@@ -77,7 +77,9 @@ const Player = ({ name, index, id }: PlayerProp) => {
       >
         <Text style={styles.playerName}>
           {name + ' '}
-          <FontAwesome5 name="pencil-alt" size={20} color={color.white} />
+          {user.id === id && (
+            <FontAwesome5 name="pencil-alt" size={20} color={color.white} />
+          )}
         </Text>
       </Animated.View>
     </TouchableOpacity>

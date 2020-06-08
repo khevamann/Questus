@@ -35,7 +35,7 @@ export default function GameHeader({ onBack }: Props) {
         />
         <View style={styles.codeCont}>
           <Text style={styles.codeTitle}>GAME CODE</Text>
-          <Text style={bungeeText(40)}>{gameCode || 'QQQQ'}</Text>
+          <Text style={bungeeText(40)}>{gameCode || '****'}</Text>
         </View>
       </View>
     </>

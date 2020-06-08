@@ -2,7 +2,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { bungeeText } from '../util/styles';
+import { bungeeText, FA_ICON } from '../util/styles';
 import { color, theme } from '../util/theme';
 
 type Props = {
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   icon: {
-    marginTop: 4,
+    ...FA_ICON,
     marginRight: 5,
   },
 });

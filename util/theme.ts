@@ -1,4 +1,4 @@
-import { Platform, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import { EdgeInsets } from 'react-native-safe-area-context';
 
 export const color = {
@@ -29,7 +29,7 @@ export const theme = {
 };
 
 export const fonts = {
-  bungee: Platform.select({ ios: 'Bungee', android: 'Bungee' }),
+  bungee: 'Bungee',
   quicksand: {
     regular: 'QuicksandReg',
     medium: 'QuicksandMed',

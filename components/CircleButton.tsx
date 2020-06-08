@@ -6,6 +6,7 @@ import { color, theme } from '../util/theme';
 type Props = {
   style?: any;
   small?: boolean;
+  disabled?: boolean;
   onPress(): void;
   children: JSX.Element;
 };
@@ -13,12 +14,14 @@ type Props = {
 export default function CircleButton({
   style,
   small,
+  disabled,
   onPress,
   children,
 }: Props) {
   return (
     <TouchableOpacity
       activeOpacity={theme.activeOpacity}
+      disabled={disabled}
       style={[styles.takePicBtn, style, small ? styles.smallBtn : null]}
       onPress={onPress}
     >

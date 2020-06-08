@@ -4,10 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SplashScreen } from 'expo';
 import * as Font from 'expo-font';
 import * as React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, YellowBox } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
-import Reactotron from 'reactotron-react-native';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import Alert from './components/Alert';
@@ -35,7 +34,7 @@ export type StackParams = {
   };
 };
 
-if (__DEV__) Reactotron.configure().useReactNative().connect();
+YellowBox.ignoreWarnings(['Setting a timer']);
 
 const RootStack = createStackNavigator<RootStackParams>();
 const Stack = createStackNavigator<StackParams>();

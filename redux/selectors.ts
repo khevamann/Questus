@@ -8,6 +8,9 @@ export const gameConfigSelector = (state: RootState) => {
   const gt = state.game.gameType;
   return gt < 3 || gt > 12 ? GameModes[`item3`] : GameModes[`item${gt}`];
 };
+export const isWinnerSelector = (state: RootState) => {
+  return state.game.gameWinner === state.user.id;
+};
 export const isHostSelector = (state: RootState) => {
   return state.game.host === state.user.id;
 };

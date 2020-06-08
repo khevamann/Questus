@@ -172,6 +172,7 @@ export const clearGame = () => {
     getState: () => RootState,
     { getFirestore }: any
   ) => {
+    if (!getState().game.gameId) return;
     /* Unsubscribe from game and player onSnapshot */
     try {
       getState().game.snapshots.gameListener();
@@ -179,7 +180,6 @@ export const clearGame = () => {
     } catch (e) {
       console.log('Error Removing listeners', e);
     }
-
     /* Remove self from the game */
     getFirestore()
       .collection('activeGames')

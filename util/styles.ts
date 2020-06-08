@@ -1,4 +1,4 @@
-import { TextStyle, ViewStyle } from 'react-native';
+import { Platform, TextStyle, ViewStyle } from 'react-native';
 
 import { color, fonts } from './theme';
 
@@ -26,7 +26,7 @@ export const bungeeText = (size: number) => {
     fontFamily: fonts.bungee,
     lineHeight: size,
     fontSize: size,
-    marginBottom: -size / 5,
+    marginBottom: Platform.select({ ios: -size / 5, android: 0 }),
     color: color.white,
   };
 };
@@ -41,5 +41,5 @@ export const MSG_TEXT: TextStyle = {
 };
 
 export const FA_ICON: TextStyle = {
-  marginTop: 4,
+  marginTop: Platform.select({ ios: 4, android: 0 }),
 };

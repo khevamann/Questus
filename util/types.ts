@@ -75,6 +75,7 @@ export type User = {
 
 export type GameItem = {
   name: string;
+  alternate: string[];
   status: ItemStatus;
 };
 

@@ -37,6 +37,11 @@ export default function PlayGame({ navigation }: PlayGameProps) {
   }, []);
 
   const goBack = () => {
+    if (gameOver) {
+      dispatch(clearGame());
+      navigation.goBack();
+      return true;
+    }
     dispatch(
       displayCustomAlert('GAME_IN_PROGRESS', {
         onPress: () => {

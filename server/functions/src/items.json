@@ -1,41 +1,14 @@
-[
-  {
-    "name": "calculator"
-  },
-  {
-    "name": "pencil"
-  },
-  {
-    "name": "water bottle"
-  },
-  {
-    "name": "glasses"
-  },
-  {
-    "name": "computer"
-  },
-  {
-    "name": "headphones"
-  },
-  {
-    "name": "shoes"
-  },
-  {
-    "name": "book"
-  },
-  {
-    "name": "cup"
-  },
-  {
-    "name": "pillow"
-  },
-  {
-    "name": "chair"
-  },
-  {
-    "name": "table"
-  },
-  {
-    "name": "ball"
-  }
+[{ "name": "calculator", "alternate": ["mobile"] },
+{ "name": "pencil", "alternate": ["chopstick"] },
+{ "name": "water bottle", "alternate": ["bottle"] },
+{ "name": "glasses", "alternate": [] },
+{ "name": "computer", "alternate": [] },
+{ "name": "headphones", "alternate": ["headset"] },
+{ "name": "shoes", "alternate": ["shoe"] },
+{ "name": "book", "alternate": [] },
+{ "name": "cup", "alternate": ["glass"] },
+{ "name": "pillow", "alternate": ["bed"] },
+{ "name": "chair", "alternate": [] },
+{ "name": "table", "alternate": ["desk"] },
+{ "name": "ball", "alternate": [] }
 ]

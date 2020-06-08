@@ -1,36 +1,30 @@
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Camera, CameraProps } from 'expo-camera';
+import { Camera } from 'expo-camera';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Animated,
-  Easing,
-  Image,
-  Platform,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { StackParams } from '../../App';
-import { callGoogleVisionAsync, isItemMatch } from '../../providers/visionApi';
-import { color, fonts, layout, safeAreaInsets, theme } from '../../util/theme';
-import { Feather, FontAwesome5 } from '@expo/vector-icons';
-import FocusGrid from './FocusGrid';
 import CircleButton from '../../components/CircleButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { clearGame, setItemComplete } from '../../redux/actions/game';
-import { RootState } from '../../redux/reducers';
-import { User } from '../../util/types';
-import { gameOverSelector, userSelector } from '../../redux/selectors';
 import Firebase from '../../providers/firebase';
+import { callGoogleVisionAsync, isItemMatch } from '../../providers/visionApi';
+import { setItemComplete } from '../../redux/actions/game';
+import { RootState } from '../../redux/reducers';
+import { gameOverSelector, isWinnerSelector } from '../../redux/selectors';
 import { shakeAnimation } from '../../util/animations';
 import { FA_ICON } from '../../util/styles';
+import { color, fonts, layout, safeAreaInsets } from '../../util/theme';
+import FocusGrid from './FocusGrid';
 
 type VisionProps = {
   route: RouteProp<StackParams, 'Vision'>;
@@ -40,18 +34,16 @@ type VisionProps = {
 
 export default function Vision({ navigation, camera, route }: VisionProps) {
   const dispatch = useDispatch();
-  const user = useSelector<RootState, User>(userSelector);
   const gameOver = useSelector<RootState, string>(gameOverSelector);
-  const [shake, setShake] = useState(0);
-  const [image, setImage] = useState('');
   const [status, setStatus] = useState('');
   const [flash, setFlash] = useState<boolean>(false);
   const [hasPermission, setHasPermission] = useState(false);
   const { itemIndex, item } = route.params;
   const animatedValue = useRef(new Animated.Value(0)).current;
+  const isWinner = useSelector<RootState, boolean>(isWinnerSelector);
 
   useEffect(() => {
-    if (!gameOver) return;
+    if (!gameOver || isWinner) return;
     exit();
   }, [gameOver]);
 
@@ -63,15 +55,14 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
   const takePictureAsync = async () => {
     setStatus('searching');
     if (!camera) return;
-    const { uri, base64 } = await camera.takePictureAsync({
+    const { base64 } = await camera.takePictureAsync({
       base64: true,
     });
     if (base64) {
-      setImage(uri);
       try {
         const results = await callGoogleVisionAsync(base64);
         if (!results) return noMatch();
-        console.log(results);
+        //console.log(results);
         if (!isItemMatch(results, item)) return noMatch();
 
         setStatus('found');
@@ -94,7 +85,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
     (async () => {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-      if (status != 'granted') {
+      if (status !== 'granted') {
         Alert.alert(
           'No Permission',
           'You must enable camera access in settings in order to find items.',
@@ -140,7 +131,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
             >
               <Text style={styles.itemText}>{item.name}</Text>
             </Animated.View>
-            <FocusGrid style={styles.focusGrid}></FocusGrid>
+            <FocusGrid style={styles.focusGrid} />
             <View style={styles.options}>
               <CircleButton
                 small
@@ -153,7 +144,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
                   <Feather name="zap-off" size={34} color={color.white} />
                 )}
               </CircleButton>
-              <CircleButton onPress={takePictureAsync}>
+              <CircleButton disabled={status !== ''} onPress={takePictureAsync}>
                 <>
                   {status === 'searching' ? (
                     <ActivityIndicator size="large" color={color.white} />
@@ -190,6 +181,7 @@ export default function Vision({ navigation, camera, route }: VisionProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'black',
   },
   camLayover: {
     width: layout.screenWidth,
@@ -229,12 +221,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.quicksand.bold,
     fontSize: 20,
     color: color.white,
-  },
-  image: {
-    borderWidth: 3,
-    margin: 10,
-    width: 300,
-    height: 300 * 1.33,
   },
   text: {
     margin: 5,

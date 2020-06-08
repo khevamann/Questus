@@ -8,10 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackParams } from '../../App';
 import BlockButton from '../../components/BlockButton';
 import { setGameType } from '../../redux/actions/game';
-import { displayAlert, userPopup } from '../../redux/actions/status';
+import { userPopup } from '../../redux/actions/status';
 import { setUser } from '../../redux/actions/user';
 import { RootState } from '../../redux/reducers';
-import { gameTypeSelector, userSelector } from '../../redux/selectors';
+import { userSelector } from '../../redux/selectors';
 import { MSG_TEXT } from '../../util/styles';
 import { setInsets } from '../../util/theme';
 import { User } from '../../util/types';
@@ -26,7 +26,6 @@ export default function Home({ navigation }: HomeProps) {
   const insets = useSafeArea();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>(userSelector);
-  const gameType = useSelector<RootState, number>(gameTypeSelector);
 
   React.useEffect(() => {
     setInsets(insets);
@@ -45,18 +44,10 @@ export default function Home({ navigation }: HomeProps) {
   };
 
   const goJoin = () => {
-    if (gameType !== 0) {
-      dispatch(displayAlert('GAME_IN_PROGRESS'));
-      return;
-    }
     navigation.navigate('JoinGame');
   };
 
   const goCreate = (newGame: number) => {
-    if (gameType !== 0) {
-      dispatch(displayAlert('GAME_IN_PROGRESS'));
-      return;
-    }
     navigation.navigate('CreateGame');
     dispatch(setGameType(newGame));
   };

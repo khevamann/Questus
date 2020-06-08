@@ -16,3 +16,4 @@ web-report/
 
 # Config files
 config/
+/server/functions/lib

@@ -37,9 +37,11 @@ export async function callGoogleVisionAsync(image: string) {
 }
 
 export const isItemMatch = (results: string[], item: GameItem) => {
-  for (const res of results) {
-    if (res.indexOf(item.name) !== -1 || item.name.indexOf(res) !== -1)
-      return true;
+  const altNames = [...item.alternate, item.name];
+  for (const name of altNames) {
+    for (const res of results) {
+      if (res.indexOf(name) !== -1) return true;
+    }
   }
   return false;
 };

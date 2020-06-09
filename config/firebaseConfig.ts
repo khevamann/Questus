@@ -1,3 +1,6 @@
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+
 const firebaseConfig: FireConfig = {
   apiKey: '',
   authDomain: '',
@@ -18,4 +21,7 @@ type FireConfig = {
   appId: string;
 };
 
-export default firebaseConfig;
+firebase.initializeApp(firebaseConfig);
+
+export default firebase;
+
